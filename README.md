@@ -39,7 +39,7 @@ npm ci
 npm run dev
 ```
 
-Open [localhost:3000](http://localhost:3000). The page displays live student tuples from `GET /api/students`, with loading, error, empty, and refresh states. Keep FastAPI running in the other terminal and configure `backend/.env`. The **Ask about Prad** button displays the Phase 2 agent answer. Configure `OPENAI_API_KEY` in `backend/.env` to enable it; the chatbot remains a later exercise.
+Open [localhost:3000](http://localhost:3000). The page displays live student tuples from `GET /api/students`, with loading, error, empty, and refresh states. Keep FastAPI running in the other terminal and configure `backend/.env`. The **Ask about Prad** button displays the Phase 2 agent answer. Configure `GEMINI_API_KEY` in `backend/.env` to enable it; the chatbot remains a later exercise.
 
 Both servers can start without credentials, but the student preview and Phase 1 script require Supabase settings. Model access becomes necessary in Phase 2.
 
@@ -49,7 +49,7 @@ The instructor prepares a Supabase project and runs `db/seed.sql` in its SQL edi
 
 Students put the project URL and **publishable key or legacy anon key** in `SUPABASE_URL` and `SUPABASE_KEY` in `backend/.env`. `backend/db_client.py` provides `get_supabase_client()` as connection plumbing; it does not query anything. The seed permits reading this fictional dataset with row-level security and does not grant anonymous writes. Do not use its public-read policy for real student data.
 
-For Phase 2 onward, configure `OPENAI_API_KEY` for a provider model available to your account. Model calls can incur charges. All provider credentials belong in `backend/.env`, never in frontend code or a `NEXT_PUBLIC_` variable.
+For Phase 2 onward, configure `GEMINI_API_KEY` for a provider model available to your account. Model calls can incur charges. All provider credentials belong in `backend/.env`, never in frontend code or a `NEXT_PUBLIC_` variable.
 
 ## Frontend Supabase helpers
 

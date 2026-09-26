@@ -48,7 +48,7 @@ async def ask_about_prad():
         raise HTTPException(503, str(exc)) from exc
     except Exception as exc:
         logging.getLogger(__name__).exception("Agent configuration failed")
-        raise HTTPException(503, "Check OPENAI_MODEL and the provider configuration.") from exc
+        raise HTTPException(503, "Check GEMINI_MODEL and the provider configuration.") from exc
 
     try:
         records = await run_in_threadpool(lambda: fetch_students(get_supabase_client()))

@@ -11,11 +11,11 @@ There are no registered database tools. The records are fetched before the model
 Set these in `backend/.env`, alongside your existing Supabase settings:
 
 ```dotenv
-OPENAI_API_KEY=your-provider-key
-OPENAI_MODEL=gpt-4o-mini
+GEMINI_API_KEY=your-provider-key
+GEMINI_MODEL=gemini-3.1-flash-lite
 ```
 
-`OPENAI_MODEL` is optional and defaults to `gpt-4o-mini`. Use an OpenAI model available to your account. Keep the key on the backend, and restart the backend after changing its environment. Each agent invocation makes a model request and can incur provider charges.
+`GEMINI_MODEL` is optional and defaults to `gemini-3.1-flash-lite`. Use a Gemini model available to your account. `GOOGLE_API_KEY` is also accepted and takes precedence if both key variables are set. Keep the key on the backend, and restart the backend after changing its environment. Each agent invocation makes a model request and can incur provider charges.
 
 From the repository root with `.venv` activated:
 

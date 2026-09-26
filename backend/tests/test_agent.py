@@ -43,11 +43,12 @@ def test_prompt_contains_rows_and_no_tools(names):
 
 
 def test_missing_key_returns_actionable_error(monkeypatch):
-    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+    monkeypatch.delenv("GEMINI_API_KEY", raising=False)
+    monkeypatch.delenv("GOOGLE_API_KEY", raising=False)
     with TestClient(main.app) as client:
         response = client.post("/api/agent/prad")
     assert response.status_code == 503
-    assert "OPENAI_API_KEY" in response.json()["detail"]
+    assert "GEMINI_API_KEY" in response.json()["detail"]
 
 
 def test_endpoint_uses_fresh_records_and_agent_answer(monkeypatch):
@@ -77,3 +78,15 @@ def test_provider_failures_are_safe(monkeypatch, failure, status):
         response = client.post("/api/agent/prad")
     assert response.status_code == status
     assert "secret" not in response.text
+
+
+@pytest.mark.parametrize("key_variable", ["GEMINI_API_KEY", "GOOGLE_API_KEY"])
+def test_gemini_key_configuration(monkeypatch, key_variable):
+    from backend import agent as agent_module
+
+    monkeypatch.delenv("GOOGLE_API_KEY", raising=False)
+    monkeypatch.delenv("GEMINI_API_KEY", raising=False)
+    monkeypatch.setenv(key_variable, "test-key-not-real")
+    monkeypatch.setenv("GEMINI_MODEL", "gemini-3.1-flash-lite")
+    configured = agent_module.create_agent()
+    assert configured.model.model_name == "gemini-3.1-flash-lite"

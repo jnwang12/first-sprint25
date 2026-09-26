@@ -4,6 +4,8 @@ import json
 import os
 
 from pydantic_ai import Agent
+from pydantic_ai.models.google import GoogleModel
+from pydantic_ai.providers.google import GoogleProvider
 from pydantic_ai.usage import UsageLimits
 
 from backend.db_client import get_supabase_client
@@ -24,11 +26,15 @@ class AgentConfigurationError(RuntimeError):
 
 
 def create_agent() -> Agent:
-    if not os.getenv("OPENAI_API_KEY"):
-        raise AgentConfigurationError("Set OPENAI_API_KEY in backend/.env and restart the backend.")
-    model = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
+    key = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
+    if not key:
+        raise AgentConfigurationError(
+            "Set GEMINI_API_KEY (or GOOGLE_API_KEY) in backend/.env and restart the backend."
+        )
+    model_name = os.getenv("GEMINI_MODEL", "gemini-3.1-flash-lite")
+    model = GoogleModel(model_name, provider=GoogleProvider(api_key=key))
     # Plain text output and no registered tools: this phase teaches prompting.
-    return Agent(f"openai:{model}", instructions=INSTRUCTIONS, output_type=str)
+    return Agent(model, instructions=INSTRUCTIONS, output_type=str)
 
 
 def build_prompt(records: list[StudentRecord]) -> str:

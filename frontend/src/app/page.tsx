@@ -71,7 +71,7 @@ export default function Home() {
           <p>{answer.answer}</p>
           <small>Based on {answer.records_analyzed} records at the time of this request.</small>
         </div>}
-        <p className="agent-hint">Requires OPENAI_API_KEY in backend/.env. Each click makes a model request.</p>
+        <p className="agent-hint">Requires GEMINI_API_KEY in backend/.env. Each click makes a model request.</p>
       </section>
       <h2>Phase 1 · Student tuples</h2>
       <div className="toolbar">
