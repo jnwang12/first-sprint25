@@ -1,16 +1,16 @@
 # Workshop phases
 
-These are implementation goals, not solutions. Start from the repository README for installation and instructor-provided Supabase setup. The TODO files are intentionally empty of phase logic. Each phase builds on the previous one; use a separate branch for each checkpoint if desired.
+Phase 1 is implemented as a reference; Phases 2–6 are implementation goals. Start from the repository README for installation and Supabase setup. The remaining TODO files are intentionally empty of phase logic. Each phase builds on the previous one; use a separate branch for each checkpoint if desired.
 
 ## Phase 1: Supabase and Python
 
-Follow the [Phase 1 setup and implementation guide](phase-1.md) for function contracts, hints, and troubleshooting.
+Follow the [Phase 1 setup and implementation guide](phase-1.md) for running the implementation, following the data flow, and troubleshooting.
 
 **Goal:** Query a pre-made Supabase table with names, emails, and majors, then print the records as tuples.
 
 **Work in:** `backend/exercise.py`. Connection setup is provided by `backend/db_client.py`; the instructor prepares `db/seed.sql`.
 
-**You implement:** retrieving the records and converting them to tuples for terminal output. Keep the query logic reusable for later phases.
+**Implemented:** retrieving records and converting them to tuples for terminal output. The query function is reusable for later phases.
 
 **Done when:** running `python -m backend.exercise` prints the table's records as tuples containing name, email, and major (nine rows if using the unchanged repository seed). No agent is involved yet.
 

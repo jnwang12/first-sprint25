@@ -1,4 +1,12 @@
-"""Extension point for the API contract. No request/response models exist yet."""
+"""Response contract for the student preview; agent contracts remain exercises."""
+from pydantic import BaseModel
 
-# TODO (Phase 4): Define Pydantic request and response models for your endpoint.
-# TODO (Phase 6): Decide how the contract carries or identifies conversation history.
+
+class StudentResponse(BaseModel):
+    name: str
+    email: str
+    major: str
+
+
+# TODO (Phase 4): Define request and response models for the agent endpoint.
+# TODO (Phase 6): Extend the agent contract for conversation history.

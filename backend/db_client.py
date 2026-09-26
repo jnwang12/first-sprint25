@@ -1,4 +1,4 @@
-"""Shared Supabase connection setup; querying the table is left to the exercises."""
+"""Shared Supabase connection setup for the Python exercises."""
 import os
 from functools import lru_cache
 

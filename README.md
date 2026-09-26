@@ -2,7 +2,7 @@
 
 A workshop starter for learning **Python, Supabase, Pydantic AI, FastAPI, Next.js, and TypeScript** across six phases.
 
-**This branch is scaffolding, not a completed app.** Students implement the database query, agent, tools, API endpoint, frontend request, and chatbot themselves. The starter includes dependencies, environment configuration, a Supabase client factory, a static Next.js page, and a FastAPI health check. There is no directory app, local database integration, or phase solution.
+**Phase 1 is implemented; Phases 2–6 remain scaffolding.** The Python script queries Supabase and prints student tuples. Students implement the agent, tools, API endpoint, frontend request, and chatbot next. The starter includes dependencies, environment configuration, a Supabase client factory, a Next.js student preview, and FastAPI health and read-only student endpoints. There is no directory app, local database integration, or phase solution.
 
 The checkout directory may still be called `first-sprint25`; that does not affect these commands.
 
@@ -20,7 +20,7 @@ cp backend/.env.example backend/.env
 python -m backend.exercise
 ```
 
-The exercise entry point prints a setup message. It does not query a database or invoke a model. On Windows PowerShell, create the environment with `py -m venv .venv`, activate with `.venv\Scripts\Activate.ps1`, and use `Copy-Item` instead of `cp`.
+The exercise entry point queries Supabase and prints each student as a tuple. Configure `backend/.env` as described below before running it. It does not invoke a model. On Windows PowerShell, create the environment with `py -m venv .venv`, activate with `.venv\Scripts\Activate.ps1`, and use `Copy-Item` instead of `cp`.
 
 ### Backend server
 
@@ -28,7 +28,7 @@ The exercise entry point prints a setup message. It does not query a database or
 python -m uvicorn backend.main:app --reload --host 127.0.0.1 --port 8000
 ```
 
-Check [the health endpoint](http://localhost:8000/health) or [FastAPI docs](http://localhost:8000/docs). `/health` is only a setup check. Students create the agent endpoint in Phase 4.
+Check [the health endpoint](http://localhost:8000/health) or [FastAPI docs](http://localhost:8000/docs). `/health` is only a setup check. `GET /api/students` serves the Phase 1 records to the frontend. Students create the separate agent endpoint in Phase 4.
 
 ### Frontend (a separate terminal)
 
@@ -39,9 +39,9 @@ npm ci
 npm run dev
 ```
 
-Open [localhost:3000](http://localhost:3000). The starter page makes no backend requests. Students add a button in Phase 5 and a chatbot UI in Phase 6.
+Open [localhost:3000](http://localhost:3000). The page displays live student tuples from `GET /api/students`, with loading, error, empty, and refresh states. Keep FastAPI running in the other terminal and configure `backend/.env`. The agent button and chatbot remain later exercises.
 
-Both servers and the starter script run without credentials. Database and model access become necessary when students implement the relevant phases.
+Both servers can start without credentials, but the student preview and Phase 1 script require Supabase settings. Model access becomes necessary in Phase 2.
 
 ## Supabase setup
 
@@ -62,7 +62,7 @@ The frontend includes `@supabase/supabase-js` and `@supabase/ssr` as optional se
 
 The proxy skips refresh when Supabase settings are absent so a fresh workshop checkout still starts. When configured, it calls `getClaims()` to refresh existing sessions. It does not enforce login or protect routes. See [Supabase's SSR guide](https://supabase.com/docs/guides/auth/server-side/creating-a-client?framework=nextjs).
 
-The starter page remains unchanged: no table queries, login UI, or phase solutions are included. The workshop's database exercises still run through Python, and Phase 5 still connects the frontend to FastAPI. The optional Supabase agent-skills installer is not part of this setup.
+The student preview queries Supabase through Python/FastAPI, not the frontend Supabase helpers. Login UI is not included. Phase 5 adds the separate agent interaction. The optional Supabase agent-skills installer is not part of this setup.
 
 ## The six phases
 
@@ -75,7 +75,7 @@ The starter page remains unchanged: no table queries, login UI, or phase solutio
 | 5 — FE → BE Integration | Add a Next.js button that calls the endpoint | Print the response in the browser console |
 | 6 — Chatbot | Replace the button with a conversational UI | Have a conversation about the database |
 
-Start with the [Phase 1 guide](docs/phase-1.md) for Python setup, table details, and scaffold checkpoints. See [docs/workshop.md](docs/workshop.md) for all six phases and acceptance criteria. None of these phase goals are implemented in the starter.
+Start with the [Phase 1 guide](docs/phase-1.md) for Python setup, table details, and the implemented data flow. See [docs/workshop.md](docs/workshop.md) for all six phases and acceptance criteria. Phase 1 is complete and includes a read-only frontend preview. Agent-related goals in Phases 2–6 remain unimplemented.
 
 ## Where students work
 
@@ -83,17 +83,17 @@ Start with the [Phase 1 guide](docs/phase-1.md) for Python setup, table details,
 backend/
   config.py         Environment loading (provided)
   db_client.py      Supabase client factory (provided)
-  exercise.py       CLI entry point with Phase 1–3 TODOs
+  exercise.py       Implemented Phase 1 query and tuple output
   agent.py          TODOs for prompting, tool registration, and history
   tools.py          TODOs for database tool calls
-  schemas.py        TODOs for the API request/response contract
-  main.py           Server and CORS setup; agent endpoint TODO
-  tests/            Setup smoke test; add tests alongside each phase
+  schemas.py        Student response model; agent contract TODOs
+  main.py           Student endpoint and CORS; agent endpoint TODO
+  tests/            Health and offline Phase 1 tests
 frontend/src/
-  app/page.tsx      Static page; button and chatbot TODOs
+  app/page.tsx      Student tuples with refresh, loading, and errors
   app/layout.tsx    Root layout and metadata
   app/globals.css   Minimal starter styles
-  lib/api.ts        API URL only; request and TypeScript contract TODOs
+  lib/api.ts        Typed student fetch; agent integration remains an exercise
 db/seed.sql         Instructor-provided database preparation
 ```
 
@@ -120,7 +120,7 @@ npm run build
 npm run typecheck
 ```
 
-The health test and frontend checks verify scaffolding only, not completion of the phases. Add behavior tests as each phase is implemented. GitHub Actions runs the same checks without Supabase or model credentials.
+The backend checks cover server health and Phase 1 behavior with offline data. Frontend checks verify scaffolding. Add behavior tests as later phases are implemented. GitHub Actions runs the same checks without Supabase or model credentials.
 
 ## Troubleshooting
 

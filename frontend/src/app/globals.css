@@ -16,3 +16,10 @@ code { overflow-wrap: anywhere; }
 .note { color: #536962; border-top: 1px solid #dce3d9; padding-top: 20px; }
 button, input, textarea { font: inherit; }
 :focus-visible { outline: 3px solid #9a611e; outline-offset: 3px; }
+
+.toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; justify-content: space-between; margin: 28px 0; }
+button { cursor: pointer; border: 0; border-radius: 6px; background: #245e4d; color: white; padding: 12px 18px; }
+button:disabled { opacity: .6; cursor: wait; }
+.records { list-style: none; padding: 0; }
+.records li { background: white; padding: 18px; border: 1px solid #dce3d9; border-radius: 8px; margin-bottom: 12px; line-height: 1.6; }
+.error { padding: 16px; color: #852e22; background: #fff0eb; border-radius: 6px; }
