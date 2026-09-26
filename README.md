@@ -99,9 +99,17 @@ db/seed.sql         Instructor-provided database preparation
 
 ## Branch workflow
 
-Keep a clean starter commit as the common starting point. Students can create their own sequential branches, for example `student/<name>/phase-1` through `student/<name>/phase-6`, branching each phase from their previous work. An instructor can separately maintain checkpoint branches for workshops where learners start at a later phase.
+`main` is the workshop starter, with setup, guided TODOs, and no phase solutions. Start your own work from `main`; the numbered branches are cumulative solution references, not starter branches for the next exercise.
 
-Branch names are suggestions; the template does not create branches or include checkpoint implementations. Instructors should distribute starter branches separately from any solution branches.
+| Branch | Contents |
+| --- | --- |
+| `main` | Starter template and Phase 1 scaffold |
+| `phase1` | Completed Phase 1, including the student tuple frontend preview |
+| `phase2`–`phase6` | Reserved for solutions through the matching phase; not created yet |
+
+Create a personal working branch from `main`, implement each phase there, and consult the matching solution branch when ready. For example, `phase1` shows the Phase 1 answer; it is not the starting point for Phase 1. Future solution branches should include the earlier solutions they depend on.
+
+Branches under `archive/` preserve the pre-reorganization history and are not workshop starting points or additional phase solutions.
 
 ## Checks
 
