@@ -1,13 +1,30 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { fetchStudents, type Student } from "@/lib/api";
+import { askAboutPrad, fetchStudents, type PradAnswer, type Student } from "@/lib/api";
 
 export default function Home() {
   const [students, setStudents] = useState<Student[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [version, setVersion] = useState(0);
+
+  const [answer, setAnswer] = useState<PradAnswer | null>(null);
+  const [asking, setAsking] = useState(false);
+  const [agentError, setAgentError] = useState("");
+
+  async function askAgent() {
+    setAsking(true);
+    setAgentError("");
+    setAnswer(null);
+    try {
+      setAnswer(await askAboutPrad());
+    } catch (cause) {
+      setAgentError(cause instanceof Error ? cause.message : "Unable to get an answer.");
+    } finally {
+      setAsking(false);
+    }
+  }
 
   useEffect(() => {
     const controller = new AbortController();
@@ -35,9 +52,28 @@ export default function Home() {
 
   return (
     <main>
-      <p className="eyebrow">FIRST SPRINT / PHASE 1</p>
+      <p className="eyebrow">FIRST SPRINT / PHASE 2</p>
       <h1>Student records</h1>
       <p>Live Supabase records, retrieved by Python and displayed as tuples.</p>
+      <section className="agent-card" aria-labelledby="agent-heading">
+        <p className="eyebrow">PYDANTIC AI + PROMPTING</p>
+        <h2 id="agent-heading">How many records have a name of Prad?</h2>
+        <p>
+          Ask the agent to count matching names from a fresh database snapshot.
+          Names are included in the prompt; matching ignores capitalization.
+        </p>
+        <button type="button" onClick={askAgent} disabled={asking}>
+          {asking ? "Asking the agent…" : "Ask about Prad"}
+        </button>
+        {asking && <p role="status">Reading the database and waiting for the agent…</p>}
+        {agentError && <p className="error" role="alert">{agentError}</p>}
+        {answer && <div className="agent-answer" role="status">
+          <p>{answer.answer}</p>
+          <small>Based on {answer.records_analyzed} records at the time of this request.</small>
+        </div>}
+        <p className="agent-hint">Requires OPENAI_API_KEY in backend/.env. Each click makes a model request.</p>
+      </section>
+      <h2>Phase 1 · Student tuples</h2>
       <div className="toolbar">
         <code>(name, email, major)</code>
         <button type="button" onClick={refresh} disabled={loading}>

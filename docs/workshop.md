@@ -1,6 +1,6 @@
 # Workshop phases
 
-Phase 1 is implemented as a reference; Phases 2–6 are implementation goals. Start from the repository README for installation and Supabase setup. The remaining TODO files are intentionally empty of phase logic. Each phase builds on the previous one. Start from `main` on your own working branch. Numbered branches are solution references: `phase1` contains the completed Phase 1 work, and future `phaseN` branches will contain solutions through Phase N. They are not starter branches for the next phase.
+Phases 1–2 are implemented as references on this branch; Phases 3–6 are subsequent implementation goals. Start from the repository README for installation and Supabase setup. The remaining TODO files are intentionally empty of phase logic. Each phase builds on the previous one. Start from `main` on your own working branch. Numbered branches are solution references: `phase1` contains the completed Phase 1 work, and future `phaseN` branches will contain solutions through Phase N. They are not starter branches for the next phase.
 
 ## Phase 1: Supabase and Python
 
@@ -16,11 +16,13 @@ Follow the [Phase 1 setup and implementation guide](phase-1.md) for running the 
 
 ## Phase 2: Pydantic AI and Prompting
 
+**Implemented on `phase2`.** See the [Phase 2 solution guide](phase-2.md) for CLI and frontend setup. A fixed-question API and button are included for its preview; later phases can generalize them.
+
 **Goal:** Ask a Pydantic AI agent how many records in the database have the name Prad.
 
 **Work in:** `backend/agent.py` and `backend/exercise.py`.
 
-**You implement:** agent configuration, instructions, supplying Phase 1's retrieved data in the prompt, invoking the agent, and printing its answer.
+**Implemented:** agent configuration, instructions, supplying Phase 1's retrieved names in the prompt, invoking the agent, and displaying its answer in the CLI and frontend.
 
 **Done when:** the script feeds the retrieved records into the agent, asks the question, and receives the correct count for the seed data. Do not hard-code the answer. This phase uses prompt-injected data; tools come next.
 
