@@ -1,4 +1,4 @@
-"""Student and fixed-question agent endpoints for the workshop preview."""
+"""Phase 4: invoke the database agent over HTTP with a validated question."""
 
 import logging
 import os
@@ -7,10 +7,15 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
 from backend import config  # noqa: F401 -- loads backend/.env
-from backend.agent import AgentConfigurationError, answer_prad_question, create_agent
+from backend.agent import (
+    AgentConfigurationError,
+    answer_prad_question,
+    answer_question,
+    create_agent,
+)
 from backend.db_client import get_supabase_client
 from backend.exercise import fetch_students
-from backend.schemas import PradAnswer, StudentResponse
+from backend.schemas import AgentAnswer, AgentQuestion, PradAnswer, StudentResponse
 from backend.tools import StudentLookupError
 
 app = FastAPI(title="First Sprint Workshop API", version="0.1.0")
@@ -40,8 +45,7 @@ def list_students():
         ) from exc
 
 
-@app.post("/api/agent/prad", response_model=PradAnswer, tags=["agent"])
-async def ask_about_prad():
+async def run_agent_request(question: str | None = None):
     """Let the agent retrieve records through its tool and return the answer."""
     try:
         agent = create_agent()
@@ -52,7 +56,9 @@ async def ask_about_prad():
         raise HTTPException(503, "Check GEMINI_MODEL and the provider configuration.") from exc
 
     try:
-        return await answer_prad_question(agent)
+        if question is None:
+            return await answer_prad_question(agent)
+        return await answer_question(question, agent)
     except StudentLookupError as exc:
         logging.getLogger(__name__).exception("Student lookup tool failed")
         raise HTTPException(503, "Unable to load student records from Supabase.") from exc
@@ -65,5 +71,26 @@ async def ask_about_prad():
         ) from exc
 
 
-# Phase 4 can generalize this fixed-question preview into a question-taking endpoint.
+@app.post(
+    "/api/agent/ask",
+    response_model=AgentAnswer,
+    tags=["agent"],
+    summary="Ask the student database agent a question",
+    responses={
+        502: {"description": "Model provider or agent failure"},
+        503: {"description": "Configuration or database lookup failure"},
+        504: {"description": "Agent run exceeded its deadline"},
+    },
+)
+async def ask_agent(request: AgentQuestion) -> AgentAnswer:
+    """Accept JSON, await the tool-using agent, and return its answer and lookup metadata."""
+    return await run_agent_request(request.question)
+
+
+@app.post("/api/agent/prad", response_model=PradAnswer, tags=["agent"])
+async def ask_about_prad():
+    """Backward-compatible fixed question used by the existing frontend."""
+    return await run_agent_request()
+
+
 # TODO (Phase 6): Extend the contract to support separate conversations.

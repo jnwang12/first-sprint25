@@ -1,6 +1,6 @@
 # Workshop phases
 
-Phases 1–3 are implemented as references on this branch; Phases 4–6 are subsequent implementation goals. Start from the repository README for installation and Supabase setup. The remaining TODO files are intentionally empty of phase logic. Each phase builds on the previous one. Start from `main` on your own working branch. Numbered branches are solution references: `phase1` contains the completed Phase 1 work, and future `phaseN` branches will contain solutions through Phase N. They are not starter branches for the next phase.
+Phases 1–4 are implemented as references on this branch; Phases 5–6 are subsequent implementation goals. Start from the repository README for installation and Supabase setup. The remaining TODO files are intentionally empty of phase logic. Each phase builds on the previous one. Start from `main` on your own working branch. Numbered branches are solution references: `phase1` contains the completed Phase 1 work, and future `phaseN` branches will contain solutions through Phase N. They are not starter branches for the next phase.
 
 ## Phase 1: Supabase and Python
 
@@ -40,11 +40,13 @@ Follow the [Phase 1 setup and implementation guide](phase-1.md) for running the 
 
 ## Phase 4: API Endpoint
 
+**Implemented on `phase4`.** See the [Phase 4 guide](phase-4.md) for server startup, curl, Postman, and API validation.
+
 **Goal:** Invoke the agent from curl or Postman instead of only a Python script.
 
 **Work in:** `backend/main.py` and `backend/schemas.py`, reusing your agent.
 
-**You implement:** an agent endpoint, a request/response contract, invocation of the agent, and handling invalid input and failures. The provided health route only verifies that FastAPI starts.
+**Implemented:** a question-taking agent endpoint, request/response contract, invocation of the agent, and handling invalid input and failures. The provided health route only verifies that FastAPI starts.
 
 **Done when:** you can start the server and send a request from curl or Postman that receives the agent's answer to the same question. Record your chosen route, method, and JSON contract for Phase 5. Test invalid input and a provider failure too.
 
