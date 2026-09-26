@@ -22,6 +22,7 @@ export type PradAnswer = {
   question: string;
   answer: string;
   records_analyzed: number;
+  tool_calls: number;
 };
 
 export async function askAboutPrad(): Promise<PradAnswer> {

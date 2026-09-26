@@ -1,4 +1,4 @@
-"""Response contracts for the student preview and Phase 2 answer."""
+"""Response contracts for the student preview and Phase 3 answer."""
 from pydantic import BaseModel
 
 
@@ -12,6 +12,7 @@ class PradAnswer(BaseModel):
     question: str
     answer: str
     records_analyzed: int
+    tool_calls: int
 
 
 # Phase 4 can generalize the fixed Phase 2 question into a request model.

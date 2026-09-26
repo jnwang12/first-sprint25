@@ -2,7 +2,7 @@
 
 A workshop starter for learning **Python, Supabase, Pydantic AI, FastAPI, Next.js, and TypeScript** across six phases.
 
-**Phases 1 and 2 are implemented on this solution branch.** Python queries Supabase and prints student tuples. A Pydantic AI agent receives the names in its prompt and answers the Prad-count question, with a frontend button to display its answer. Database tool calls and conversation history remain later exercises. The starter includes dependencies, environment configuration, a Supabase client factory, a Next.js student preview, and FastAPI health and read-only student endpoints. There is no directory app, local database integration, or phase solution.
+**Phases 1–3 are implemented on this solution branch.** Python queries Supabase and prints student tuples. A Pydantic AI agent retrieves names through a read-only tool and answers the Prad-count question, with a frontend button showing its answer and successful tool-call count. Conversation history remains a later exercise. The starter includes dependencies, environment configuration, a Supabase client factory, a Next.js student preview, and FastAPI health and read-only student endpoints. There is no directory app, local database integration, or phase solution.
 
 The checkout directory may still be called `first-sprint25`; that does not affect these commands.
 
@@ -28,7 +28,7 @@ The exercise entry point queries Supabase and prints each student as a tuple. Co
 python -m uvicorn backend.main:app --reload --host 127.0.0.1 --port 8000
 ```
 
-Check [the health endpoint](http://localhost:8000/health) or [FastAPI docs](http://localhost:8000/docs). `/health` is only a setup check. `GET /api/students` serves the Phase 1 records to the frontend. `POST /api/agent/prad` powers the Phase 2 preview; Phase 4 can generalize it.
+Check [the health endpoint](http://localhost:8000/health) or [FastAPI docs](http://localhost:8000/docs). `/health` is only a setup check. `GET /api/students` serves the Phase 1 records to the frontend. `POST /api/agent/prad` powers the Phase 3 preview; Phase 4 can generalize it.
 
 ### Frontend (a separate terminal)
 
@@ -39,7 +39,7 @@ npm ci
 npm run dev
 ```
 
-Open [localhost:3000](http://localhost:3000). The page displays live student tuples from `GET /api/students`, with loading, error, empty, and refresh states. Keep FastAPI running in the other terminal and configure `backend/.env`. The **Ask about Prad** button displays the Phase 2 agent answer. Configure `GEMINI_API_KEY` in `backend/.env` to enable it; the chatbot remains a later exercise.
+Open [localhost:3000](http://localhost:3000). The page displays live student tuples from `GET /api/students`, with loading, error, empty, and refresh states. Keep FastAPI running in the other terminal and configure `backend/.env`. The **Ask about Prad** button displays the Phase 3 agent answer. Configure `GEMINI_API_KEY` in `backend/.env` to enable it; the chatbot remains a later exercise.
 
 Both servers can start without credentials, but the student preview and Phase 1 script require Supabase settings. Model access becomes necessary in Phase 2.
 
@@ -75,7 +75,7 @@ Both previews use Python/FastAPI; frontend Supabase helpers remain available for
 | 5 — FE → BE Integration | Add a Next.js button that calls the endpoint | Print the response in the browser console |
 | 6 — Chatbot | Replace the button with a conversational UI | Have a conversation about the database |
 
-Start with the [Phase 1 guide](docs/phase-1.md) for Python setup, table details, and the implemented data flow. See [docs/workshop.md](docs/workshop.md) for all six phases and acceptance criteria. Phases 1 and 2 are complete, including their frontend previews. See [the Phase 2 solution guide](docs/phase-2.md) for model setup, the CLI, and the prompt flow. The fixed-question API/button are included to demonstrate Phase 2; later phases can generalize them.
+Start with the [Phase 1 guide](docs/phase-1.md) for Python setup, table details, and the implemented data flow. See [docs/workshop.md](docs/workshop.md) for all six phases and acceptance criteria. Phases 1–3 are complete, including their frontend previews. See [the Phase 3 solution guide](docs/phase-3.md) for setup and the tool-call flow. The fixed-question API/button demonstrate the agent; later phases can generalize them.
 
 ## Where students work
 
@@ -84,13 +84,13 @@ backend/
   config.py         Environment loading (provided)
   db_client.py      Supabase client factory (provided)
   exercise.py       Implemented Phase 1 query and tuple output
-  agent.py          Phase 2 prompt-injected agent and CLI
-  tools.py          TODOs for database tool calls
+  agent.py          Phase 3 tool-using agent and CLI
+  tools.py          Read-only student-name tool and per-run metadata
   schemas.py        Student response model; agent contract TODOs
   main.py           Student and fixed-question agent endpoints
   tests/            Health, Phase 1, and offline agent/API tests
 frontend/src/
-  app/page.tsx      Student tuples and the Phase 2 agent panel
+  app/page.tsx      Student tuples and the Phase 3 agent panel
   app/layout.tsx    Root layout and metadata
   app/globals.css   Minimal starter styles
   lib/api.ts        Typed student and agent requests
@@ -106,7 +106,8 @@ db/seed.sql         Instructor-provided database preparation
 | `main` | Starter template and Phase 1 scaffold |
 | `phase1` | Completed Phase 1, including the student tuple frontend preview |
 | `phase2` | Completed Phases 1–2, with the prompt-based agent and frontend answer |
-| `phase3`–`phase6` | Reserved for solutions through the matching phase; not created yet |
+| `phase3` | Completed Phases 1–3, with database retrieval through a model tool call |
+| `phase4`–`phase6` | Reserved for solutions through the matching phase; not created yet |
 
 Create a personal working branch from `main`, implement each phase there, and consult the matching solution branch when ready. For example, `phase1` shows the Phase 1 answer; it is not the starting point for Phase 1. Future solution branches should include the earlier solutions they depend on.
 
@@ -129,7 +130,7 @@ npm run build
 npm run typecheck
 ```
 
-The backend checks cover server health, Phase 1, the Pydantic AI prompt pipeline, and the answer API with offline data. Frontend checks verify scaffolding. Add behavior tests as later phases are implemented. GitHub Actions runs the same checks without Supabase or model credentials.
+The backend checks cover server health, Phase 1, the Pydantic AI tool pipeline, and the answer API with offline data. Frontend checks verify scaffolding. Add behavior tests as later phases are implemented. GitHub Actions runs the same checks without Supabase or model credentials.
 
 ## Troubleshooting
 

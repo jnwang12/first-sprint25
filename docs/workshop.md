@@ -1,6 +1,6 @@
 # Workshop phases
 
-Phases 1–2 are implemented as references on this branch; Phases 3–6 are subsequent implementation goals. Start from the repository README for installation and Supabase setup. The remaining TODO files are intentionally empty of phase logic. Each phase builds on the previous one. Start from `main` on your own working branch. Numbered branches are solution references: `phase1` contains the completed Phase 1 work, and future `phaseN` branches will contain solutions through Phase N. They are not starter branches for the next phase.
+Phases 1–3 are implemented as references on this branch; Phases 4–6 are subsequent implementation goals. Start from the repository README for installation and Supabase setup. The remaining TODO files are intentionally empty of phase logic. Each phase builds on the previous one. Start from `main` on your own working branch. Numbered branches are solution references: `phase1` contains the completed Phase 1 work, and future `phaseN` branches will contain solutions through Phase N. They are not starter branches for the next phase.
 
 ## Phase 1: Supabase and Python
 
@@ -28,11 +28,13 @@ Follow the [Phase 1 setup and implementation guide](phase-1.md) for running the 
 
 ## Phase 3: Tool Calls
 
+**Implemented on `phase3`.** See the [Phase 3 solution guide](phase-3.md) for the CLI, frontend, and tool execution flow.
+
 **Goal:** Answer the same question by letting the agent call a tool to get the data.
 
 **Work in:** `backend/tools.py`, `backend/agent.py`, and `backend/exercise.py`.
 
-**You implement:** a read-only database lookup tool, its registration with the agent, and a CLI invocation that no longer injects the records into the prompt.
+**Implemented:** a read-only database lookup tool, agent registration, and CLI/frontend invocation that no longer injects records into the initial prompt.
 
 **Done when:** the agent invokes the tool to retrieve the data and answers the Prad question correctly. Verify that a tool call actually occurred, rather than relying on the answer alone.
 

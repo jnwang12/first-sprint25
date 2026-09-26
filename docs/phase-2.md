@@ -1,5 +1,7 @@
 # Phase 2 solution: Pydantic AI and Prompting
 
+This guide describes the `phase2` branch. On `phase3`, follow [the tool-call guide](phase-3.md) instead.
+
 This branch builds on Phase 1. It retrieves student records with the existing Python query, inserts their names into a prompt, and asks a Pydantic AI agent:
 
 > How many records in the database have a name of Prad?
