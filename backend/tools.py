@@ -41,3 +41,21 @@ async def get_student_names(ctx: RunContext[StudentTools]) -> list[dict[str, str
     ctx.deps.tool_calls += 1
     # Only the data needed for this question reaches the model.
     return names
+
+
+async def get_students(ctx: RunContext[StudentTools]) -> list[StudentRecord]:
+    """Read student names, emails, and majors for questions and follow-up questions.
+
+    Each returned item is one database record. Duplicate names are separate students.
+    This tool only reads data and cannot modify the database.
+    """
+    try:
+        records = await asyncio.to_thread(ctx.deps.load_students)
+        rows = [
+            {"name": row["name"], "email": row["email"], "major": row["major"]} for row in records
+        ]
+    except Exception as exc:
+        raise StudentLookupError("Unable to load student records from Supabase.") from exc
+    ctx.deps.records_analyzed = len(rows)
+    ctx.deps.tool_calls += 1
+    return rows

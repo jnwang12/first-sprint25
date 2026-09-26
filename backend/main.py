@@ -13,9 +13,10 @@ from backend.agent import (
     answer_question,
     create_agent,
 )
+from backend.chat import answer_chat
 from backend.db_client import get_supabase_client
 from backend.exercise import fetch_students
-from backend.schemas import AgentAnswer, AgentQuestion, PradAnswer, StudentResponse
+from backend.schemas import AgentAnswer, AgentQuestion, ChatRequest, PradAnswer, StudentResponse
 from backend.tools import StudentLookupError
 
 app = FastAPI(title="First Sprint Workshop API", version="0.1.0")
@@ -45,10 +46,10 @@ def list_students():
         ) from exc
 
 
-async def run_agent_request(question: str | None = None):
+async def run_agent_request(question: str | None = None, chat_request: ChatRequest | None = None):
     """Let the agent retrieve records through its tool and return the answer."""
     try:
-        agent = create_agent()
+        agent = create_agent(chat=True) if chat_request is not None else create_agent()
     except AgentConfigurationError as exc:
         raise HTTPException(503, str(exc)) from exc
     except Exception as exc:
@@ -56,6 +57,8 @@ async def run_agent_request(question: str | None = None):
         raise HTTPException(503, "Check GEMINI_MODEL and the provider configuration.") from exc
 
     try:
+        if chat_request is not None:
+            return await answer_chat(chat_request, agent)
         if question is None:
             return await answer_prad_question(agent)
         return await answer_question(question, agent)
@@ -93,4 +96,7 @@ async def ask_about_prad():
     return await run_agent_request()
 
 
-# TODO (Phase 6): Extend the contract to support separate conversations.
+@app.post("/api/chat", response_model=AgentAnswer, tags=["chat"])
+async def chat(request: ChatRequest) -> AgentAnswer:
+    """Answer with the current tab's supplied history; no shared conversation state."""
+    return await run_agent_request(chat_request=request)

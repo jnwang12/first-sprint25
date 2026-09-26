@@ -15,7 +15,6 @@ export async function fetchStudents(signal?: AbortSignal): Promise<Student[]> {
   return response.json();
 }
 
-// TODO (Phase 6): Extend that request for conversation history.
 
 export type AgentAnswer = {
   question: string;
@@ -39,6 +38,34 @@ export async function askAgent(question: string): Promise<AgentAnswer> {
   if (!response.ok) {
     const body = await response.json().catch(() => null);
     throw new Error(typeof body?.detail === "string" ? body.detail : "Unable to get an agent answer.");
+  }
+  return response.json();
+}
+
+export type ChatMessage = { role: "user" | "assistant"; content: string };
+
+export async function sendChat(
+  question: string,
+  history: ChatMessage[],
+  signal?: AbortSignal,
+): Promise<AgentAnswer> {
+  let response: Response;
+  try {
+    response = await fetch(`${API_BASE_URL}/api/chat`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ question, history }),
+      signal,
+    });
+  } catch (error) {
+    if (signal?.aborted) throw error;
+    throw new Error("Cannot reach the API. Start the Python backend on port 8000.");
+  }
+  if (!response.ok) {
+    const body = await response.json().catch(() => null);
+    throw new Error(typeof body?.detail === "string" ? body.detail :
+      response.status === 422 ? "The message or conversation history is invalid. Start a new chat." :
+      "Unable to get a reply. Please try again.");
   }
   return response.json();
 }

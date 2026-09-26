@@ -1,6 +1,6 @@
 # Workshop phases
 
-Phases 1–5 are implemented as references on this branch; Phase 6 is the remaining implementation goal. Start from the repository README for installation and Supabase setup. The remaining TODO files are intentionally empty of phase logic. Each phase builds on the previous one. Start from `main` on your own working branch. Numbered branches are solution references: `phase1` contains the completed Phase 1 work, and future `phaseN` branches will contain solutions through Phase N. They are not starter branches for the next phase.
+All six phases are implemented as references on this branch. Earlier numbered branches preserve the solution through that phase. Start from the repository README for installation and Supabase setup. The remaining TODO files are intentionally empty of phase logic. Each phase builds on the previous one. Start from `main` on your own working branch. Numbered branches are solution references: `phase1` contains the completed Phase 1 work, and future `phaseN` branches will contain solutions through Phase N. They are not starter branches for the next phase.
 
 ## Phase 1: Supabase and Python
 
@@ -64,11 +64,13 @@ Follow the [Phase 1 setup and implementation guide](phase-1.md) for running the 
 
 ## Phase 6: Chatbot
 
+**Implemented on `phase6`.** See the [Phase 6 guide](phase-6.md) for conversation history, tools, reset behavior, and API examples.
+
 **Goal:** Have a conversation with the agent about data in the database.
 
 **Work in:** the frontend page and API module, plus `backend/agent.py`, `backend/schemas.py`, and `backend/main.py` as needed.
 
-**You implement:** message input, a submit action, displayed user and agent messages, pending/error states, and conversation history across requests. Decide how the frontend and backend carry or identify a conversation. Keep separate conversations isolated; do not share one global history among all users.
+**Implemented:** message input, displayed user and agent messages, pending/error states, and recent conversation history across requests. Each browser tab owns its transcript; the backend has no shared conversation history. New chat clears the context.
 
 **Done when:** users can ask a database question and then a follow-up referring to the previous exchange. The agent retains the relevant context and can still use its database tool. Starting a new conversation clears the previous context. Model credentials remain on the backend.
 

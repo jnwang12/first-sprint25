@@ -2,7 +2,7 @@
 
 A workshop starter for learning **Python, Supabase, Pydantic AI, FastAPI, Next.js, and TypeScript** across six phases.
 
-**Phases 1–5 are implemented on this solution branch.** Python queries Supabase and prints student tuples. A Pydantic AI agent retrieves names through a read-only tool and answers the Prad-count question, with a frontend button showing its answer and successful tool-call count. Conversation history remains a later exercise. The starter includes dependencies, environment configuration, a Supabase client factory, a Next.js student preview, and FastAPI health and read-only student endpoints. There is no directory app, local database integration, or phase solution.
+**All six phases are implemented on this solution branch.** Python queries Supabase and prints student tuples. A Pydantic AI agent retrieves names through a read-only tool and answers the Prad-count question, with a chatbot showing replies and lookup metadata. Follow-up questions use the current tab's recent conversation history. The starter includes dependencies, environment configuration, a Supabase client factory, a Next.js student preview, and FastAPI health and read-only student endpoints. There is no directory app, local database integration, or phase solution.
 
 The checkout directory may still be called `first-sprint25`; that does not affect these commands.
 
@@ -39,7 +39,7 @@ npm ci
 npm run dev
 ```
 
-Open [localhost:3000](http://localhost:3000). The page displays live student tuples from `GET /api/students`, with loading, error, empty, and refresh states. Keep FastAPI running in the other terminal and configure `backend/.env`. The **Ask about Prad** button calls `/api/agent/ask`, logs the JSON response in the browser console, and displays the answer. See the [Phase 5 guide](docs/phase-5.md). Configure `GEMINI_API_KEY` in `backend/.env` to enable it; the chatbot remains a later exercise.
+Open [localhost:3000](http://localhost:3000). The page displays live student tuples from `GET /api/students`, with loading, error, empty, and refresh states. Keep FastAPI running in the other terminal and configure `backend/.env`. The chat composer calls `/api/chat` with a message and recent history. Replies appear in the transcript and are logged in the browser console. See the [Phase 6 guide](docs/phase-6.md). Configure `GEMINI_API_KEY` in `backend/.env` to enable replies.
 
 Both servers can start without credentials, but the student preview and Phase 1 script require Supabase settings. Model access becomes necessary in Phase 2.
 
@@ -75,7 +75,7 @@ Both previews use Python/FastAPI; frontend Supabase helpers remain available for
 | 5 — FE → BE Integration | Add a Next.js button that calls the endpoint | Print the response in the browser console |
 | 6 — Chatbot | Replace the button with a conversational UI | Have a conversation about the database |
 
-Start with the [Phase 1 guide](docs/phase-1.md) for Python setup, table details, and the implemented data flow. See [docs/workshop.md](docs/workshop.md) for all six phases and acceptance criteria. Phases 1–5 are complete, including the question-taking API and frontend button with browser-console output. See [the Phase 3 solution guide](docs/phase-3.md) for setup and the tool-call flow. Use the [Phase 4 guide](docs/phase-4.md) to invoke the agent through curl or Postman.
+Start with the [Phase 1 guide](docs/phase-1.md) for Python setup, table details, and the implemented data flow. See [docs/workshop.md](docs/workshop.md) for all six phases and acceptance criteria. All six phases are complete. See the [Phase 6 guide](docs/phase-6.md) for the chatbot, follow-up questions, and conversation reset. See [the Phase 3 solution guide](docs/phase-3.md) for setup and the tool-call flow. Use the [Phase 4 guide](docs/phase-4.md) to invoke the agent through curl or Postman.
 
 ## Where students work
 
@@ -84,16 +84,17 @@ backend/
   config.py         Environment loading (provided)
   db_client.py      Supabase client factory (provided)
   exercise.py       Implemented Phase 1 query and tuple output
-  agent.py          Phase 3 tool-using agent and CLI
-  tools.py          Read-only student-name tool and per-run metadata
+  agent.py          Tool-using agents for single questions and chat
+  tools.py          Read-only name/full-record tools and per-run metadata
+  chat.py           Convert bounded text history into model messages
   schemas.py        Student response model; agent contract TODOs
   main.py           Student and fixed-question agent endpoints
   tests/            Health, Phase 1, and offline agent/API tests
 frontend/src/
-  app/page.tsx      Student tuples and the Phase 3 agent panel
+  app/page.tsx      Chat transcript, composer, and student-data preview
   app/layout.tsx    Root layout and metadata
   app/globals.css   Minimal starter styles
-  lib/api.ts        Typed student and agent requests
+  lib/api.ts        Typed student, agent, and chat requests
 db/seed.sql         Instructor-provided database preparation
 ```
 
@@ -109,7 +110,7 @@ db/seed.sql         Instructor-provided database preparation
 | `phase3` | Completed Phases 1–3, with database retrieval through a model tool call |
 | `phase4` | Completed Phases 1–4, with a validated question-taking HTTP endpoint |
 | `phase5` | Completed Phases 1–5, with a frontend button calling the API and logging its response |
-| `phase6` | Reserved for the chatbot solution; not created yet |
+| `phase6` | Completed Phases 1–6, with a conversational chatbot and per-tab history |
 
 Create a personal working branch from `main`, implement each phase there, and consult the matching solution branch when ready. For example, `phase1` shows the Phase 1 answer; it is not the starting point for Phase 1. Future solution branches should include the earlier solutions they depend on.
 
