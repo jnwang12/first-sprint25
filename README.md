@@ -51,6 +51,19 @@ Students put the project URL and **publishable key or legacy anon key** in `SUPA
 
 For Phase 2 onward, configure `OPENAI_API_KEY` for a provider model available to your account. Model calls can incur charges. All provider credentials belong in `backend/.env`, never in frontend code or a `NEXT_PUBLIC_` variable.
 
+## Frontend Supabase helpers
+
+The frontend includes `@supabase/supabase-js` and `@supabase/ssr` as optional session plumbing. Configure `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` in `frontend/.env.local` (see `.env.example`). Use only a publishable key here. This file is ignored by Git; restart Next.js after editing it.
+
+- `src/utils/supabase/client.ts`: browser client factory.
+- `src/utils/supabase/server.ts`: server client factory accepting `await cookies()`.
+- `src/utils/supabase/middleware.ts`: session-refresh helper.
+- `src/proxy.ts`: Next.js 16 entry point that runs the helper and forwards refreshed cookies and cache headers.
+
+The proxy skips refresh when Supabase settings are absent so a fresh workshop checkout still starts. When configured, it calls `getClaims()` to refresh existing sessions. It does not enforce login or protect routes. See [Supabase's SSR guide](https://supabase.com/docs/guides/auth/server-side/creating-a-client?framework=nextjs).
+
+The starter page remains unchanged: no table queries, login UI, or phase solutions are included. The workshop's database exercises still run through Python, and Phase 5 still connects the frontend to FastAPI. The optional Supabase agent-skills installer is not part of this setup.
+
 ## The six phases
 
 | Phase | Students implement | Goal |
@@ -62,7 +75,7 @@ For Phase 2 onward, configure `OPENAI_API_KEY` for a provider model available to
 | 5 — FE → BE Integration | Add a Next.js button that calls the endpoint | Print the response in the browser console |
 | 6 — Chatbot | Replace the button with a conversational UI | Have a conversation about the database |
 
-See [docs/workshop.md](docs/workshop.md) for file pointers and acceptance criteria. None of these phase goals are implemented in the starter.
+Start with the [Phase 1 guide](docs/phase-1.md) for Python setup, table details, and scaffold checkpoints. See [docs/workshop.md](docs/workshop.md) for all six phases and acceptance criteria. None of these phase goals are implemented in the starter.
 
 ## Where students work
 

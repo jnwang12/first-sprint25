@@ -4,13 +4,15 @@ These are implementation goals, not solutions. Start from the repository README 
 
 ## Phase 1: Supabase and Python
 
+Follow the [Phase 1 setup and implementation guide](phase-1.md) for function contracts, hints, and troubleshooting.
+
 **Goal:** Query a pre-made Supabase table with names, emails, and majors, then print the records as tuples.
 
 **Work in:** `backend/exercise.py`. Connection setup is provided by `backend/db_client.py`; the instructor prepares `db/seed.sql`.
 
 **You implement:** retrieving the records and converting them to tuples for terminal output. Keep the query logic reusable for later phases.
 
-**Done when:** running `python -m backend.exercise` prints all nine seeded records as tuples containing name, email, and major. No agent is involved yet.
+**Done when:** running `python -m backend.exercise` prints the table's records as tuples containing name, email, and major (nine rows if using the unchanged repository seed). No agent is involved yet.
 
 ## Phase 2: Pydantic AI and Prompting
 
