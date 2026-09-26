@@ -2,7 +2,7 @@
 
 A workshop starter for learning **Python, Supabase, Pydantic AI, FastAPI, Next.js, and TypeScript** across six phases.
 
-**Phases 1–4 are implemented on this solution branch.** Python queries Supabase and prints student tuples. A Pydantic AI agent retrieves names through a read-only tool and answers the Prad-count question, with a frontend button showing its answer and successful tool-call count. Conversation history remains a later exercise. The starter includes dependencies, environment configuration, a Supabase client factory, a Next.js student preview, and FastAPI health and read-only student endpoints. There is no directory app, local database integration, or phase solution.
+**Phases 1–5 are implemented on this solution branch.** Python queries Supabase and prints student tuples. A Pydantic AI agent retrieves names through a read-only tool and answers the Prad-count question, with a frontend button showing its answer and successful tool-call count. Conversation history remains a later exercise. The starter includes dependencies, environment configuration, a Supabase client factory, a Next.js student preview, and FastAPI health and read-only student endpoints. There is no directory app, local database integration, or phase solution.
 
 The checkout directory may still be called `first-sprint25`; that does not affect these commands.
 
@@ -39,7 +39,7 @@ npm ci
 npm run dev
 ```
 
-Open [localhost:3000](http://localhost:3000). The page displays live student tuples from `GET /api/students`, with loading, error, empty, and refresh states. Keep FastAPI running in the other terminal and configure `backend/.env`. The **Ask about Prad** button displays the Phase 3 agent answer. Configure `GEMINI_API_KEY` in `backend/.env` to enable it; the chatbot remains a later exercise.
+Open [localhost:3000](http://localhost:3000). The page displays live student tuples from `GET /api/students`, with loading, error, empty, and refresh states. Keep FastAPI running in the other terminal and configure `backend/.env`. The **Ask about Prad** button calls `/api/agent/ask`, logs the JSON response in the browser console, and displays the answer. See the [Phase 5 guide](docs/phase-5.md). Configure `GEMINI_API_KEY` in `backend/.env` to enable it; the chatbot remains a later exercise.
 
 Both servers can start without credentials, but the student preview and Phase 1 script require Supabase settings. Model access becomes necessary in Phase 2.
 
@@ -75,7 +75,7 @@ Both previews use Python/FastAPI; frontend Supabase helpers remain available for
 | 5 — FE → BE Integration | Add a Next.js button that calls the endpoint | Print the response in the browser console |
 | 6 — Chatbot | Replace the button with a conversational UI | Have a conversation about the database |
 
-Start with the [Phase 1 guide](docs/phase-1.md) for Python setup, table details, and the implemented data flow. See [docs/workshop.md](docs/workshop.md) for all six phases and acceptance criteria. Phases 1–4 are complete, including the earlier frontend previews and the question-taking API. See [the Phase 3 solution guide](docs/phase-3.md) for setup and the tool-call flow. Use the [Phase 4 guide](docs/phase-4.md) to invoke the agent through curl or Postman.
+Start with the [Phase 1 guide](docs/phase-1.md) for Python setup, table details, and the implemented data flow. See [docs/workshop.md](docs/workshop.md) for all six phases and acceptance criteria. Phases 1–5 are complete, including the question-taking API and frontend button with browser-console output. See [the Phase 3 solution guide](docs/phase-3.md) for setup and the tool-call flow. Use the [Phase 4 guide](docs/phase-4.md) to invoke the agent through curl or Postman.
 
 ## Where students work
 
@@ -108,7 +108,8 @@ db/seed.sql         Instructor-provided database preparation
 | `phase2` | Completed Phases 1–2, with the prompt-based agent and frontend answer |
 | `phase3` | Completed Phases 1–3, with database retrieval through a model tool call |
 | `phase4` | Completed Phases 1–4, with a validated question-taking HTTP endpoint |
-| `phase5`–`phase6` | Reserved for solutions through the matching phase; not created yet |
+| `phase5` | Completed Phases 1–5, with a frontend button calling the API and logging its response |
+| `phase6` | Reserved for the chatbot solution; not created yet |
 
 Create a personal working branch from `main`, implement each phase there, and consult the matching solution branch when ready. For example, `phase1` shows the Phase 1 answer; it is not the starting point for Phase 1. Future solution branches should include the earlier solutions they depend on.
 

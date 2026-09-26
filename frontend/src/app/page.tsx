@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { askAboutPrad, fetchStudents, type PradAnswer, type Student } from "@/lib/api";
+import { askAgent, fetchStudents, type AgentAnswer, type Student } from "@/lib/api";
 
 export default function Home() {
   const [students, setStudents] = useState<Student[]>([]);
@@ -9,17 +9,21 @@ export default function Home() {
   const [error, setError] = useState("");
   const [version, setVersion] = useState(0);
 
-  const [answer, setAnswer] = useState<PradAnswer | null>(null);
+  const [answer, setAnswer] = useState<AgentAnswer | null>(null);
   const [asking, setAsking] = useState(false);
   const [agentError, setAgentError] = useState("");
 
-  async function askAgent() {
+  async function handleAskAgent() {
     setAsking(true);
     setAgentError("");
     setAnswer(null);
     try {
-      setAnswer(await askAboutPrad());
+      const response = await askAgent("How many records in the database have a name of Prad?");
+      // Phase 5 goal: inspect the backend JSON in the browser's DevTools Console.
+      console.log("[Phase 5] Agent API response:", response);
+      setAnswer(response);
     } catch (cause) {
+      console.error("[Phase 5] Agent API request failed:", cause);
       setAgentError(cause instanceof Error ? cause.message : "Unable to get an answer.");
     } finally {
       setAsking(false);
@@ -52,23 +56,24 @@ export default function Home() {
 
   return (
     <main>
-      <p className="eyebrow">FIRST SPRINT / PHASE 3</p>
+      <p className="eyebrow">FIRST SPRINT / PHASE 5</p>
       <h1>Student records</h1>
       <p>Live Supabase records, retrieved by Python and displayed as tuples.</p>
       <section className="agent-card" aria-labelledby="agent-heading">
-        <p className="eyebrow">PYDANTIC AI + TOOL CALLS</p>
+        <p className="eyebrow">FRONTEND → BACKEND</p>
         <h2 id="agent-heading">How many records have a name of Prad?</h2>
         <p>
           Ask the agent to count matching names from a fresh database snapshot.
-          The agent calls a database tool to retrieve names; matching ignores capitalization.
+          Open DevTools → Console, then click the button to see the backend JSON response.
         </p>
-        <button type="button" onClick={askAgent} disabled={asking}>
+        <button type="button" onClick={handleAskAgent} disabled={asking}>
           {asking ? "Asking the agent…" : "Ask about Prad"}
         </button>
         {asking && <p role="status">Reading the database and waiting for the agent…</p>}
         {agentError && <p className="error" role="alert">{agentError}</p>}
         {answer && <div className="agent-answer" role="status">
           <p>{answer.answer}</p>
+          <p>Response logged to the browser console.</p>
           <small>Database tool calls: {answer.tool_calls} · {answer.records_analyzed} records retrieved.</small>
         </div>}
         <p className="agent-hint">Requires GEMINI_API_KEY in backend/.env. Each click makes a model request.</p>

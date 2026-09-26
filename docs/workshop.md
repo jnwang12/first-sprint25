@@ -1,6 +1,6 @@
 # Workshop phases
 
-Phases 1–4 are implemented as references on this branch; Phases 5–6 are subsequent implementation goals. Start from the repository README for installation and Supabase setup. The remaining TODO files are intentionally empty of phase logic. Each phase builds on the previous one. Start from `main` on your own working branch. Numbered branches are solution references: `phase1` contains the completed Phase 1 work, and future `phaseN` branches will contain solutions through Phase N. They are not starter branches for the next phase.
+Phases 1–5 are implemented as references on this branch; Phase 6 is the remaining implementation goal. Start from the repository README for installation and Supabase setup. The remaining TODO files are intentionally empty of phase logic. Each phase builds on the previous one. Start from `main` on your own working branch. Numbered branches are solution references: `phase1` contains the completed Phase 1 work, and future `phaseN` branches will contain solutions through Phase N. They are not starter branches for the next phase.
 
 ## Phase 1: Supabase and Python
 
@@ -52,11 +52,13 @@ Follow the [Phase 1 setup and implementation guide](phase-1.md) for running the 
 
 ## Phase 5: FE → BE Integration
 
+**Implemented on `phase5`.** See the [Phase 5 guide](phase-5.md) for startup and browser Console/Network inspection.
+
 **Goal:** Click a button in a small Next.js app to invoke the backend endpoint and print its response to the browser console.
 
 **Work in:** `frontend/src/app/page.tsx` and `frontend/src/lib/api.ts`.
 
-**You implement:** an interactive client component, a button handler, a typed request matching Phase 4's contract, and console output. The API base URL and backend CORS configuration are already supplied; the request itself is not.
+**Implemented:** an interactive client component, a button handler, a typed request matching Phase 4's contract, and console output. The API base URL and backend CORS configuration are supplied, and the request sends a JSON question to `/api/agent/ask`.
 
 **Done when:** clicking the button sends a request visible in the browser's Network tab and logs the answer in its console. Handle a failed request so it is distinguishable from a successful answer. No chatbot is required yet.
 

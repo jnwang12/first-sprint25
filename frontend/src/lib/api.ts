@@ -15,21 +15,22 @@ export async function fetchStudents(signal?: AbortSignal): Promise<Student[]> {
   return response.json();
 }
 
-// TODO (Phase 5): Add a request to your future agent endpoint.
 // TODO (Phase 6): Extend that request for conversation history.
 
-export type PradAnswer = {
+export type AgentAnswer = {
   question: string;
   answer: string;
   records_analyzed: number;
   tool_calls: number;
 };
 
-export async function askAboutPrad(): Promise<PradAnswer> {
+export async function askAgent(question: string): Promise<AgentAnswer> {
   let response: Response;
   try {
-    response = await fetch(`${API_BASE_URL}/api/agent/prad`, {
+    response = await fetch(`${API_BASE_URL}/api/agent/ask`, {
       method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ question }),
       cache: "no-store",
     });
   } catch {
