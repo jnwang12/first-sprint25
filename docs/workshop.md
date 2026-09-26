@@ -1,6 +1,6 @@
 # Workshop phases
 
-These are implementation goals, not solutions. Start from the repository README for installation and instructor-provided Supabase setup. The TODO files are intentionally empty of phase logic. Each phase builds on the previous one; use a separate branch for each checkpoint if desired.
+These are implementation goals, not solutions. Start from the repository README for installation and instructor-provided Supabase setup. The TODO files are intentionally empty of phase logic. Each phase builds on the previous one. Start from `main` on your own working branch. Numbered branches are solution references: `phase1` contains the completed Phase 1 work, and future `phaseN` branches will contain solutions through Phase N. They are not starter branches for the next phase.
 
 ## Phase 1: Supabase and Python
 
