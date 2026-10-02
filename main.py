@@ -53,9 +53,30 @@ result = agent.run_sync("Reply with exactly: Hello from Gemini!")
 print(result.output)
 # Expected: Hello from Gemini!
 
-# TODO:
+# Solution:
 # 1. Query all students' names, emails, and majors.
 # 2. Create a prompt containing those records and this question:
 #    "How many records have the name prad?"
 # 3. Send your prompt to the agent.
 # 4. Print the agent's answer.
+response = (
+    supabase.table("students")
+    .select("name, email, major")
+    .order("id")
+    .execute()
+)
+
+prompt = f"""
+Here are the student records:
+{response.data}
+
+Using these records, how many records have the name prad?
+Count each matching record, including records with the same name.
+Answer in one sentence.
+"""
+
+print("Agent answer:")
+result = agent.run_sync(prompt)
+print(result.output)
+# Expected meaning: There are 3 records with the name prad.
+# Exact wording may vary.
