@@ -2,6 +2,9 @@ import os
 from pathlib import Path
 
 from dotenv import load_dotenv
+from pydantic_ai import Agent
+from pydantic_ai.models.google import GoogleModel
+from pydantic_ai.providers.google import GoogleProvider
 from supabase import create_client
 
 
@@ -35,3 +38,24 @@ response = (
 
 for row in response.data:
     print((row["name"], row["email"], row["major"]))
+
+
+# Phase 2: provided agent setup.
+model = GoogleModel(
+    os.environ["GEMINI_MODEL"],
+    provider=GoogleProvider(api_key=os.environ["GEMINI_API_KEY"]),
+)
+agent = Agent(model)
+
+# Reference: send a prompt and print the answer.
+print("Agent example:")
+result = agent.run_sync("Reply with exactly: Hello from Gemini!")
+print(result.output)
+# Expected: Hello from Gemini!
+
+# TODO:
+# 1. Query all students' names, emails, and majors.
+# 2. Create a prompt containing those records and this question:
+#    "How many records have the name prad?"
+# 3. Send your prompt to the agent.
+# 4. Print the agent's answer.
