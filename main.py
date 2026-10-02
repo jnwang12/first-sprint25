@@ -20,19 +20,6 @@ print("Read example:")
 print(response.data)
 # Expected: [{'name': 'mac', 'major': 'ethics'}]
 
-# Reference: write a major to one student and return the updated fields.
-# This uses the existing value so rerunning it keeps the workshop data consistent.
-response = (
-    supabase.table("students")
-    .update({"major": "ethics"})
-    .eq("id", 2)
-    .select("name, major")
-    .execute()
-)
-print("Write example:")
-print(response.data)
-# Expected: [{'name': 'mac', 'major': 'ethics'}]
-
 # TODO: Find every student named "prad".
 # Retrieve their name, email, and major, ordered by id.
 # Print each record as a tuple: (name, email, major).
