@@ -1,16 +1,16 @@
-# Phase 3: Build an agent with a tool
+# Phase 4: API Endpoint
 
-Create an agent with standing instructions and a Python function it can call.
-The user supplies a question; the agent requests the tool and uses the returned
-data to answer. All code stays in `main.py`.
+Start a server with an endpoint that invokes the Phase 3 student agent. The goal
+is to answer the same database question using curl or Postman instead of running
+a Python script.
 
 ## Setup
 
-Use your Phase 2 environment and `.env`. No new dependencies or keys are needed.
+Use your Phase 3 environment and `.env`. Install the updated dependencies:
 
 ```bash
 source .venv/bin/activate
-python main.py
+python -m pip install -r requirements.txt
 ```
 
 For a fresh checkout, use Python 3.11 or newer:
@@ -25,99 +25,120 @@ cp .env.example .env
 Fill in `SUPABASE_KEY` and `GEMINI_API_KEY` in `.env`. The workshop Supabase URL and
 Gemini model name are already supplied. Use a model available to your account.
 Get a Gemini key from [Google AI Studio](https://aistudio.google.com/apikey).
-Keep `.env` out of Git.
+Keep `.env` out of Git. The key needs SELECT access to `public.students`.
 
 On Windows PowerShell, use `py -m venv .venv`, activate with
 `.venv\Scripts\Activate.ps1`, and copy with `Copy-Item .env.example .env`.
 
 ## What is already provided
 
-- The completed Phase 1 read queries and tuple output.
-- The completed Phase 2 greeting and database prompt.
-- The existing Supabase client and Gemini model configuration.
-- A Phase 3 reference agent with its own instructions and tool.
+- `main.py`: the completed Phase 1–3 code, including `student_agent` and its
+  `get_students` tool. Script examples now run only with `python main.py`, so
+  importing the agent does not execute database queries or model calls.
+- `server.py`: a FastAPI app, a complete health endpoint, JSON request and response
+  models, the imported student agent, and the Phase 4 TODO.
+- `requirements.txt`: previous dependencies plus FastAPI and Uvicorn.
 
-The earlier phases run first when you run `main.py`. The new reference begins at
-`Tool example:`. Each agent run starts fresh; earlier answers are not automatically
-passed in as conversation history. Model calls use your provider quota and may
-incur charges.
+The request model accepts a nonblank `question`; the response model contains an
+`answer`. Each request starts a fresh agent run. Model calls use your provider quota
+and may incur charges.
 
-## Walk through the reference
+## Start the server
 
-`example_agent` has three separate pieces:
+Run from the repository root:
 
-1. **Standing instructions:** `instructions` sets its role and tells it to use
-   `get_workshop_topic` before answering a question about the workshop topic.
-2. **Tool:** `@example_agent.tool_plain` registers a Python function. Its docstring
-   describes what it returns. It prints a message when called and returns the topic.
-3. **User prompt:** `example_agent.run_sync("What does this workshop cover?")`
-   supplies only the user's question.
-
-Gemini requests the tool, Pydantic AI runs the function locally, and its return
-value goes back to Gemini so it can compose the answer.
-
-Expected reference output (answer wording may vary):
-
-```text
-Tool example:
-Tool called: get_workshop_topic
-This workshop covers Supabase, Python, and AI agents.
+```bash
+python -m uvicorn server:app --reload
 ```
 
-The tool-call message shows that the function actually ran. A plausible answer
-alone does not demonstrate tool use.
+`server:app` means the `app` object in `server.py`. Uvicorn serves it at
+`http://127.0.0.1:8000`; `--reload` reloads the server when you save code.
+Stop it with Ctrl+C. Keep this terminal open and use a second terminal for curl.
+
+Try the provided reference endpoint:
+
+```bash
+curl http://127.0.0.1:8000/health
+```
+
+Expected response:
+
+```json
+{"status":"ok"}
+```
+
+Open `http://127.0.0.1:8000/docs` for interactive API documentation.
+The base has only the health route; the agent route appears after you implement it.
+The environment variables must be filled in before starting either branch because
+importing `main.py` configures the Supabase client and Gemini model.
 
 ## Your task
 
-Complete the TODO at the bottom of `main.py`:
+Complete the TODO at the bottom of `server.py`:
 
-1. Create a separate `student_agent` using the provided `model`.
-2. Give it standing instructions to use `get_students` before answering database
-   questions, answer from the returned records, count records individually even
-   when names repeat, and keep answers concise.
-3. Register your own `get_students` tool on that agent. Add a docstring explaining
-   what it returns.
-4. Inside the tool, print `Tool called: get_students`, query all students' names,
-   emails, and majors from Supabase, and return the records.
-5. Run your agent with the user prompt: `How many records have the name prad?`
-6. Print the returned answer.
+1. Register `POST /api/agent/ask`, using `response_model=AgentAnswer`.
+2. Create a handler with a parameter typed as `AgentQuestion`.
+3. Send `request.question` to the existing `student_agent` with `run_sync`.
+4. Return `AgentAnswer` with the result's `output` as its `answer`.
 
-The tool should retrieve all students, including those whose name is not `prad`.
-Let the agent request the tool during its run. Keep database records and tool-use
-instructions out of the user question. Reuse the Supabase query pattern from
-Phase 2 inside your tool.
+Use a regular `def` handler. FastAPI runs it in a worker thread, where the
+synchronous `run_sync` call can wait for the agent. Do not put `run_sync` inside
+an `async def` handler. The existing agent should retrieve records through its
+`get_students` tool; keep database queries out of the endpoint.
 
-Expected solution output after the reference example (answer wording may vary):
+## Test with curl
 
-```text
-Student agent answer:
-Tool called: get_students
-There are 3 records with the name prad.
+After completing the TODO, run this in a second terminal:
+
+```bash
+curl -X POST http://127.0.0.1:8000/api/agent/ask \
+  -H 'Content-Type: application/json' \
+  -d '{"question":"How many records have the name prad?"}'
 ```
 
-The count assumes the existing workshop table is unchanged. Confirm both that your
-tool ran and that the answer matches the database. If no tool-call message appears,
-check your tool registration, docstring, and agent instructions.
+Expected response (wording may vary):
+
+```json
+{"answer":"There are 3 records with the name prad."}
+```
+
+The server terminal should print `Tool called: get_students`. Confirm both that
+the tool ran and that the answer matches the database. The count assumes the
+workshop records are unchanged. The HTTP response contains the answer, not the
+script's earlier example output.
+
+Try sending `{"question":""}` or `{}` instead. FastAPI should return HTTP 422
+for an invalid request without running the agent. Before the TODO is complete,
+the agent URL returns HTTP 404.
+
+On Windows PowerShell, use `curl.exe` for the curl commands; put the POST command
+on one line instead of using Bash's backslash continuation.
+
+## Test with Postman
+
+1. Create a **POST** request to `http://127.0.0.1:8000/api/agent/ask`.
+2. Select **Body → raw → JSON**; confirm `Content-Type: application/json`.
+3. Enter `{"question":"How many records have the name prad?"}`.
+4. Click **Send** and check for HTTP 200 and an `answer` in the JSON response.
+
+If the server cannot start, check your active environment and `.env` settings.
+If `/health` works but the agent request fails, check the server traceback,
+provider key/model, and Supabase read access. A GET request to the completed agent
+route returns HTTP 405; use POST with a JSON body.
 
 ## Branches
 
 ```text
-phase-2-solution
-└── phase-3-base
-    └── phase-3-solution
+phase-3-solution
+└── phase-4-base
+    └── phase-4-solution
 ```
 
-- `phase-3-base`: previous solutions, a complete sample agent and tool, and the TODO.
-- `phase-3-solution`: the same files with the student agent and tool implemented.
-
-## Database access
-
-Use the existing `public.students` table with `id`, `name`, `email`, and `major`.
-The workshop key needs SELECT access to the sample records. All queries are reads.
-If a query returns `[]` unexpectedly, check the project, filters, and read policies.
+- `phase-4-base`: completed earlier phases, server setup, a health reference, and the TODO.
+- `phase-4-solution`: the same files with the agent endpoint implemented.
 
 ## References
 
-- [Agent instructions and user prompts](https://ai.pydantic.dev/agents/)
-- [Function tools](https://ai.pydantic.dev/tools/)
-- [Supabase read queries](https://supabase.com/docs/reference/python/select)
+- [FastAPI request bodies](https://fastapi.tiangolo.com/tutorial/body/)
+- [FastAPI synchronous and asynchronous handlers](https://fastapi.tiangolo.com/async/)
+- [Pydantic AI agent runs](https://ai.pydantic.dev/agents/)
