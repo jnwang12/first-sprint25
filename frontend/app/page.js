@@ -13,13 +13,21 @@ export default function Home() {
     setLoading(true);
     setError("");
     try {
-      // TODO (Phase 5):
+      // Solution (Phase 5):
       // 1. Use fetch(API_URL, ...) to POST JSON with { question: QUESTION }.
       //    Set the Content-Type header to application/json.
       // 2. Check response.ok; throw an Error if the request failed.
       // 3. Await response.json() and print it with console.log.
-      // Reference: this prints in the browser console when you click the button.
-      console.log("Button clicked:", QUESTION);
+      const response = await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ question: QUESTION }),
+      });
+      if (!response.ok) {
+        throw new Error(`Agent request failed (HTTP ${response.status})`);
+      }
+      const data = await response.json();
+      console.log("Agent response:", data);
     } catch (error) {
       console.error("Agent request failed:", error);
       setError(error.message);
