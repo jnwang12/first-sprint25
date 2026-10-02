@@ -80,3 +80,39 @@ result = agent.run_sync(prompt)
 print(result.output)
 # Expected meaning: There are 3 records with the name prad.
 # Exact wording may vary.
+
+
+# Phase 3 reference: an agent with standing instructions and its own tool.
+example_agent = Agent(
+    model,
+    instructions="""
+    You explain what this workshop covers.
+    Use get_workshop_topic before answering questions about the workshop topic.
+    Base your answer on the tool's result and keep it to one sentence.
+    """,
+)
+
+
+@example_agent.tool_plain
+def get_workshop_topic() -> str:
+    """Return the topic of this workshop."""
+    print("Tool called: get_workshop_topic")
+    return "Supabase, Python, and AI agents."
+
+
+print("Tool example:")
+result = example_agent.run_sync("What does this workshop cover?")
+print(result.output)
+# Expected: the tool-call message, followed by an answer about
+# Supabase, Python, and AI agents. Exact wording may vary.
+
+# TODO:
+# 1. Create your own student_agent using the provided model.
+# 2. Give it instructions to use get_students before answering database questions,
+#    base answers on returned records, count duplicate names, and be concise.
+# 3. Register a get_students tool on your student_agent with a descriptive docstring.
+# 4. Inside the tool, print "Tool called: get_students", query all students'
+#    names, emails, and majors, and return the records.
+# 5. Run student_agent with the user prompt: "How many records have the name prad?"
+# 6. Print the agent's answer. Let the agent call the tool during its run;
+#    do not fetch records yourself or include them in the user prompt.
