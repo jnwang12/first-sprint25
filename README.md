@@ -1,24 +1,24 @@
-# Phase 5: FE → BE Integration
+# Phase 6: Chatbot
 
-Build a very small Next.js app that calls the completed Phase 4 backend from a
-button. Goal: click the button, invoke the student agent, and print the JSON
-response in the **browser console**.
+Replace the fixed-question button with a chatbot. Goal: have a conversation with
+the agent about records in the student database, including follow-up questions.
 
-## What is already provided
+## What is provided
 
-- The completed Phase 1–4 Python code and `POST /api/agent/ask` endpoint.
-- Local CORS setup in `server.py` allowing the frontend on port 3000.
-- A minimal Next.js App Router app in `frontend/` using JavaScript.
-- A client page with a button, the question, backend URL, loading/error states,
-  and a TODO in `frontend/app/page.js`.
+- Completed Phase 1–5 code. The Phase 5 button remains at `/button`.
+- A chatbot page at `/` with an input form, message list, loading/error handling,
+  and a **New chat** control.
+- Backend chat request/response models, a conversation history dictionary, and a
+  lock for sequential history updates.
+- TODOs in `server.py` and `frontend/app/page.js`.
 
-The base button prints `Button clicked:` and the question. It does **not** call
-the backend yet. The Phase 5 solution adds the request and logs the response.
-Completed earlier phases belong in both branches.
+**The base is starter code:** submitting the form displays your message locally
+and logs it in the browser console. It does not call the agent, and
+`/api/agent/chat` is not implemented yet. The solution completes both TODOs.
 
-## Start the backend
+## Run locally
 
-From the repository root, use your Phase 4 environment and `.env`:
+Use your existing Phase 5 environment and backend `.env`. From the repository root:
 
 ```bash
 source .venv/bin/activate
@@ -26,7 +26,18 @@ python -m pip install -r requirements.txt
 python -m uvicorn server:app --reload
 ```
 
-For a fresh checkout, first create the environment with Python 3.11 or newer:
+Keep that terminal open. In a second terminal, use Node.js 22 or newer:
+
+```bash
+cd frontend
+npm ci
+npm run dev
+```
+
+Open `http://localhost:3000`. No new dependencies or keys are needed.
+Use frontend port 3000 so it matches the backend's CORS settings.
+
+For a fresh checkout, use Python 3.11 or newer:
 
 ```bash
 python3 -m venv .venv
@@ -35,104 +46,94 @@ python -m pip install -r requirements.txt
 cp .env.example .env
 ```
 
-Fill in `SUPABASE_KEY` and `GEMINI_API_KEY`; keep the provided Supabase URL and
-use a Gemini model available to your account. Keep `.env` out of Git. The workshop
-key needs SELECT access to `public.students`. No new backend dependencies or keys
-are required for Phase 5.
+Fill in `SUPABASE_KEY` and `GEMINI_API_KEY`. Keep the workshop Supabase URL and
+use a Gemini model available to your account. The workshop key needs SELECT access
+to `public.students`. Keep all keys in the backend `.env`, which is ignored by Git.
+On PowerShell, activate with `.venv\Scripts\Activate.ps1` and copy with
+`Copy-Item .env.example .env`.
 
-On Windows PowerShell, use `py -m venv .venv`, activate with
-`.venv\Scripts\Activate.ps1`, and copy with `Copy-Item .env.example .env`.
+## Your task: backend
 
-Confirm the backend works before starting the frontend:
+Complete the TODO in `server.py`:
 
-```bash
-curl http://127.0.0.1:8000/health
-curl -X POST http://127.0.0.1:8000/api/agent/ask \
-  -H 'Content-Type: application/json' \
-  -d '{"question":"How many records have the name prad?"}'
-```
+1. Register `POST /api/agent/chat` with `response_model=ChatAnswer`.
+2. Accept `request: ChatQuestion` in a regular `def` handler.
+3. Use `request.conversation_id` or generate a new ID with `uuid4()`.
+4. Inside `with conversation_lock:`, load that ID's history from `conversations`,
+   defaulting to an empty list.
+5. Call `student_agent.run_sync(request.question, message_history=history)`.
+6. After a successful run, save `result.all_messages()` under the conversation ID.
+7. Return the agent's answer and conversation ID in a `ChatAnswer`.
 
-Expected: `{"status":"ok"}` for health and an `answer` for the agent request.
-Exact answer wording may vary. On PowerShell, use `curl.exe` and put the POST
-command on one line.
+Use the full Pydantic AI message history. It includes tool requests and database
+results as well as the conversation text. A visible chat transcript alone does
+not give the model context. Keep histories separate by ID and save only after a
+successful run. Keep `/api/agent/ask` as the stateless earlier-phase endpoint.
 
-## Start the frontend
+## Your task: frontend
 
-Use Node.js 22 or newer. Keep the backend running and open a second terminal:
+Complete the TODO inside `sendMessage` in `frontend/app/page.js`:
 
-```bash
-cd frontend
-npm ci
-npm run dev
-```
+1. POST JSON `{ question, conversation_id: conversationId }` to `API_URL`.
+2. Set `Content-Type: application/json` and check `response.ok`.
+3. Parse the returned JSON and save `data.conversation_id` with `setConversationId`.
+4. Append `{ role: "assistant", content: data.answer }` with a functional
+   `setMessages` update so the user's message is retained.
 
-Open `http://localhost:3000`. Open Developer Tools → **Console**, then click
-**Ask agent**. In the base, you should see the provided click message.
-The answer is intended for the browser console, not the terminal running Next.js.
-
-Use port 3000 so the frontend matches the backend's allowed origins. If Next.js
-picks another port because 3000 is occupied, stop that process or update
-`allow_origins` in `server.py`. Both `localhost:3000` and `127.0.0.1:3000` are allowed.
-
-## Your task
-
-Complete the TODO in `frontend/app/page.js`, inside `askAgent`:
-
-1. Use `fetch(API_URL, ...)` to send a **POST** request.
-2. Set `Content-Type` to `application/json`.
-3. Set the body to `JSON.stringify({ question: QUESTION })`.
-4. Check `response.ok` and throw an `Error` for a failed HTTP response.
-5. Await `response.json()` and print the returned object with `console.log`.
-
-Replace the reference click log with your implementation. Keep the provided
-loading/error handling. `"use client"` enables the button's browser event handler
-and React state. The request should happen only when the button is clicked.
-
-The page calls the Python API directly; no Next.js API route or database client
-is needed. Keep Gemini and Supabase keys in the backend `.env`, never in frontend
-code. The hard-coded local API URL and question are provided for this exercise.
+The supplied code already adds the user message, clears the input, disables the
+form while loading, and restores the input/transcript if a request fails.
+**New chat** clears the transcript and ID; the next request starts fresh.
 
 ## Verify the solution
 
-Click **Ask agent** with the browser console open. Expected console object:
+1. Ask: `How many records have the name prad?`
+2. Confirm the answer appears in an agent message and the backend prints
+   `Tool called: get_students`. With the unchanged workshop data, there are 3.
+3. Follow up: `What majors do those records have?` Confirm it refers to the
+   records from the previous question and uses database facts.
+4. Inspect Developer Tools → Network: both POSTs to `/api/agent/chat` should use
+   the same conversation ID (the first request sends null; the response supplies it).
+5. Click **New chat** and ask another question. Confirm a new ID is returned.
+6. Open a second tab and start a chat. Confirm it receives its own ID and history.
+
+The answer wording may vary. Do not hard-code the count, answers, or database
+records. Every turn uses provider quota. The Phase 5 `/button` example should
+continue to work independently.
+
+Request and response contract:
 
 ```json
-{"answer":"There are 3 records with the name prad."}
+{"question":"How many records have the name prad?","conversation_id":null}
 ```
 
-The answer comes from the API; do not hard-code it. The count assumes the workshop
-records are unchanged. In Developer Tools → **Network**, verify a POST to
-`http://127.0.0.1:8000/api/agent/ask` with the JSON question and HTTP 200. A CORS
-preflight OPTIONS request may also appear. The backend terminal should print
-`Tool called: get_students`.
-
-While the request runs, the button shows `Asking…` and is disabled. If it fails,
-the page displays an error and logs it in the console. If you see `Failed to fetch`,
-check that the backend is running and the frontend origin matches CORS setup.
-For HTTP 500, inspect the backend traceback and provider/database settings.
-Each click starts a fresh agent run and uses your provider quota.
-
-To check the frontend production build:
-
-```bash
-cd frontend
-npm run build
+```json
+{"answer":"There are 3 records with the name prad.","conversation_id":"<UUID returned by the server>"}
 ```
+
+Use the returned UUID for later questions. Empty questions or invalid IDs return
+HTTP 422. If the request fails, the page shows an error; inspect the backend
+traceback for database or model issues. In the base, the chat endpoint returns 404.
+
+History lives in one Python process and clears on server restart or reload.
+Use one Uvicorn worker for this workshop. The simple lock serializes chat runs.
+Refreshing the page starts a new chat; old histories remain in server memory until
+restart. Unknown valid IDs start an empty history. Durable storage, authentication,
+streaming, and history cleanup are outside this exercise.
+
+Check the frontend build with `cd frontend` followed by `npm run build`.
 
 ## Branches
 
 ```text
-phase-4-solution
-└── phase-5-base
-    └── phase-5-solution
+phase-5-solution
+└── phase-6-base
+    └── phase-6-solution
 ```
 
-- `phase-5-base`: completed earlier phases, local CORS setup, a Next.js button
-  reference, and the fetch/console TODO.
-- `phase-5-solution`: the same files with the button's API request implemented.
+- `phase-6-base`: previous solutions, chat UI scaffolding, history setup, and TODOs.
+- `phase-6-solution`: the same files with chat requests and conversation history implemented.
 
 ## References
 
-- [Next.js installation and App Router](https://nextjs.org/docs/app/getting-started/installation)
+- [Pydantic AI message history](https://ai.pydantic.dev/message-history/)
 - [Next.js client components](https://nextjs.org/docs/app/api-reference/directives/use-client)
-- [FastAPI CORS setup](https://fastapi.tiangolo.com/tutorial/cors/)

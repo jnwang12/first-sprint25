@@ -1,8 +1,8 @@
 import "./globals.css";
 
 export const metadata = {
-  title: "Phase 5: Student Agent",
-  description: "Call the student agent from a Next.js button.",
+  title: "Phase 6: Student Agent Chat",
+  description: "Have a conversation with the student database agent.",
 };
 
 export default function RootLayout({ children }) {

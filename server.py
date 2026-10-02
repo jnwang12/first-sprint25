@@ -1,5 +1,10 @@
 """Phase 4: serve the Phase 3 student agent over HTTP."""
 
+from threading import Lock
+from uuid import UUID, uuid4
+
+from pydantic_ai.messages import ModelMessage
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, ConfigDict, Field
@@ -46,3 +51,26 @@ def health() -> dict[str, str]:
 def ask_agent(request: AgentQuestion) -> AgentAnswer:
     result = student_agent.run_sync(request.question)
     return AgentAnswer(answer=result.output)
+
+
+# Phase 6 setup: each chat gets its own history, including tool calls/results.
+class ChatQuestion(AgentQuestion):
+    conversation_id: UUID | None = None
+
+
+class ChatAnswer(AgentAnswer):
+    conversation_id: UUID
+
+
+# Workshop-only memory: restart/reload clears chats; use one server process.
+conversations: dict[UUID, list[ModelMessage]] = {}
+conversation_lock = Lock()
+
+# TODO (Phase 6):
+# 1. Register POST /api/agent/chat with response_model=ChatAnswer.
+# 2. Use request.conversation_id or create a new ID with uuid4().
+# 3. Inside `with conversation_lock:`, load that chat's history (default []).
+# 4. Call student_agent.run_sync(request.question, message_history=history).
+# 5. Save result.all_messages() under the ID only after a successful run.
+# 6. Return ChatAnswer(answer=result.output, conversation_id=conversation_id).
+# Keep /api/agent/ask as the previous stateless Phase 4/5 reference.
