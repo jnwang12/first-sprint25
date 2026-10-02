@@ -1,4 +1,4 @@
-# Phase 1: Read and write with Supabase
+# Phase 1: Read data with Supabase
 
 Learn the Supabase Python query syntax, then write your own query and print its results.
 The connection setup is provided. All exercise code lives in `main.py`.
@@ -26,15 +26,10 @@ Run the script:
 python main.py
 ```
 
-## Read the two examples
+## Read the example
 
-`main.py` includes a read query and a write query against the existing `students` table:
-
-1. Read the name and major of the student with `id = 2`.
-2. Update that student's major to `ethics` and return their name and major.
-
-The update writes the current value, so it can be repeated without adding rows or
-changing the expected dataset. Both examples print:
+`main.py` includes a query that reads the name and major of the student with
+`id = 2` from the existing `students` table. It prints:
 
 ```text
 [{'name': 'mac', 'major': 'ethics'}]
@@ -63,7 +58,7 @@ You are done when your script prints all three tuples in this order.
 
 ## Branches
 
-- `phase-1-base`: provided setup, two reference queries, and the TODO.
+- `phase-1-base`: provided setup, a reference read query, and the TODO.
 - `phase-1-solution`: the same files with the TODO completed.
 
 ## Instructor preparation
@@ -72,18 +67,14 @@ Use the existing `public.students` table with `id`, `name`, `email`, and `major`
 No seed or table creation is needed. Expected output comes from the table screenshot
 provided on October 2, 2026; confirm the records still match before the workshop.
 
-The provided key needs SELECT access for the exercise and UPDATE access to `major`
-on the example row (`id = 2`). The old repository seed allowed reads only, so check
-the current table grants and row-level policies before distributing this exercise.
-Use a workshop key with those limited permissions; do not distribute a service-role
-or secret key or disable row-level security to make the example work.
+The provided workshop key needs SELECT access to these records. Confirm the table
+grants and row-level read policies before distributing the exercise.
 
-Both reference queries should return the row shown above. If an example returns
+The reference query should return the row shown above. If it returns
 `[]` or a permission error, check the project, row, and access policies before asking
 students to debug their own query.
 
 ## API reference
 
 - [Read queries](https://supabase.com/docs/reference/python/select)
-- [Update queries](https://supabase.com/docs/reference/python/update)
 - [Ordering results](https://supabase.com/docs/reference/python/order)
