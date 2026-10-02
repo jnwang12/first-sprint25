@@ -106,7 +106,7 @@ print(result.output)
 # Expected: the tool-call message, followed by an answer about
 # Supabase, Python, and AI agents. Exact wording may vary.
 
-# TODO:
+# Solution:
 # 1. Create your own student_agent using the provided model.
 # 2. Give it instructions to use get_students before answering database questions,
 #    base answers on returned records, count duplicate names, and be concise.
@@ -116,3 +116,33 @@ print(result.output)
 # 5. Run student_agent with the user prompt: "How many records have the name prad?"
 # 6. Print the agent's answer. Let the agent call the tool during its run;
 #    do not fetch records yourself or include them in the user prompt.
+student_agent = Agent(
+    model,
+    instructions="""
+    You answer questions about the student database.
+    Use get_students to retrieve records before answering database questions.
+    Base your answer on the returned records.
+    Count records individually, even when names repeat.
+    Keep answers concise.
+    """,
+)
+
+
+@student_agent.tool_plain
+def get_students() -> list:
+    """Return all students' names, emails, and majors from the database."""
+    print("Tool called: get_students")
+    response = (
+        supabase.table("students")
+        .select("name, email, major")
+        .order("id")
+        .execute()
+    )
+    return response.data
+
+
+print("Student agent answer:")
+result = student_agent.run_sync("How many records have the name prad?")
+print(result.output)
+# Expected: the get_students tool-call message, then an answer identifying
+# 3 records named prad. Exact answer wording may vary.
