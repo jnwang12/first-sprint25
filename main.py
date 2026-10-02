@@ -33,8 +33,18 @@ print("Write example:")
 print(response.data)
 # Expected: [{'name': 'mac', 'major': 'ethics'}]
 
-# TODO: Find every student named "prad".
+# Solution: Find every student named "prad".
 # Retrieve their name, email, and major, ordered by id.
 # Print each record as a tuple: (name, email, major).
 # Hint: access a specific field with row["email"].
 print("Your query:")
+response = (
+    supabase.table("students")
+    .select("name, email, major")
+    .eq("name", "prad")
+    .order("id")
+    .execute()
+)
+
+for row in response.data:
+    print((row["name"], row["email"], row["major"]))
