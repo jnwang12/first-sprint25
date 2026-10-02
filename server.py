@@ -66,7 +66,7 @@ class ChatAnswer(AgentAnswer):
 conversations: dict[UUID, list[ModelMessage]] = {}
 conversation_lock = Lock()
 
-# TODO (Phase 6):
+# Solution (Phase 6):
 # 1. Register POST /api/agent/chat with response_model=ChatAnswer.
 # 2. Use request.conversation_id or create a new ID with uuid4().
 # 3. Inside `with conversation_lock:`, load that chat's history (default []).
@@ -74,3 +74,13 @@ conversation_lock = Lock()
 # 5. Save result.all_messages() under the ID only after a successful run.
 # 6. Return ChatAnswer(answer=result.output, conversation_id=conversation_id).
 # Keep /api/agent/ask as the previous stateless Phase 4/5 reference.
+
+
+@app.post("/api/agent/chat", response_model=ChatAnswer)
+def chat(request: ChatQuestion) -> ChatAnswer:
+    conversation_id = request.conversation_id or uuid4()
+    with conversation_lock:
+        history = conversations.get(conversation_id, [])
+        result = student_agent.run_sync(request.question, message_history=history)
+        conversations[conversation_id] = result.all_messages()
+    return ChatAnswer(answer=result.output, conversation_id=conversation_id)

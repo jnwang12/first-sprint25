@@ -21,13 +21,22 @@ export default function Home() {
     setLoading(true);
     setError("");
     try {
-      // TODO (Phase 6):
+      // Solution (Phase 6):
       // 1. POST { question, conversation_id: conversationId } to API_URL as JSON.
       // 2. Check response.ok, then await response.json().
       // 3. Save data.conversation_id with setConversationId for the next turn.
       // 4. Append { role: "assistant", content: data.answer } with setMessages.
-      // Reference: the provided form displays your message locally.
-      console.log("Chat form submitted:", question);
+      const response = await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ question, conversation_id: conversationId }),
+      });
+      if (!response.ok) {
+        throw new Error(`Chat request failed (HTTP ${response.status})`);
+      }
+      const data = await response.json();
+      setConversationId(data.conversation_id);
+      setMessages((previous) => [...previous, { role: "assistant", content: data.answer }]);
     } catch (error) {
       console.error("Chat request failed:", error);
       setError(error.message);
