@@ -24,10 +24,16 @@ def health() -> dict[str, str]:
     return {"status": "ok"}
 
 
-# TODO (Phase 4):
+# Solution (Phase 4):
 # 1. Register a POST route at /api/agent/ask with response_model=AgentAnswer.
 # 2. Write a regular def handler accepting request: AgentQuestion.
 # 3. Call student_agent.run_sync(request.question).
 # 4. Return AgentAnswer(answer=result.output).
 # Let the existing agent call get_students; do not query Supabase in this route.
 # Use regular def with run_sync, rather than calling run_sync inside async def.
+
+
+@app.post("/api/agent/ask", response_model=AgentAnswer)
+def ask_agent(request: AgentQuestion) -> AgentAnswer:
+    result = student_agent.run_sync(request.question)
+    return AgentAnswer(answer=result.output)
