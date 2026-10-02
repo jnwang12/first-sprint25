@@ -1,19 +1,32 @@
-# Phase 4: API Endpoint
+# Phase 5: FE → BE Integration
 
-Start a server with an endpoint that invokes the Phase 3 student agent. The goal
-is to answer the same database question using curl or Postman instead of running
-a Python script.
+Build a very small Next.js app that calls the completed Phase 4 backend from a
+button. Goal: click the button, invoke the student agent, and print the JSON
+response in the **browser console**.
 
-## Setup
+## What is already provided
 
-Use your Phase 3 environment and `.env`. Install the updated dependencies:
+- The completed Phase 1–4 Python code and `POST /api/agent/ask` endpoint.
+- Local CORS setup in `server.py` allowing the frontend on port 3000.
+- A minimal Next.js App Router app in `frontend/` using JavaScript.
+- A client page with a button, the question, backend URL, loading/error states,
+  and a TODO in `frontend/app/page.js`.
+
+The base button prints `Button clicked:` and the question. It does **not** call
+the backend yet. The Phase 5 solution adds the request and logs the response.
+Completed earlier phases belong in both branches.
+
+## Start the backend
+
+From the repository root, use your Phase 4 environment and `.env`:
 
 ```bash
 source .venv/bin/activate
 python -m pip install -r requirements.txt
+python -m uvicorn server:app --reload
 ```
 
-For a fresh checkout, use Python 3.11 or newer:
+For a fresh checkout, first create the environment with Python 3.11 or newer:
 
 ```bash
 python3 -m venv .venv
@@ -22,123 +35,104 @@ python -m pip install -r requirements.txt
 cp .env.example .env
 ```
 
-Fill in `SUPABASE_KEY` and `GEMINI_API_KEY` in `.env`. The workshop Supabase URL and
-Gemini model name are already supplied. Use a model available to your account.
-Get a Gemini key from [Google AI Studio](https://aistudio.google.com/apikey).
-Keep `.env` out of Git. The key needs SELECT access to `public.students`.
+Fill in `SUPABASE_KEY` and `GEMINI_API_KEY`; keep the provided Supabase URL and
+use a Gemini model available to your account. Keep `.env` out of Git. The workshop
+key needs SELECT access to `public.students`. No new backend dependencies or keys
+are required for Phase 5.
 
 On Windows PowerShell, use `py -m venv .venv`, activate with
 `.venv\Scripts\Activate.ps1`, and copy with `Copy-Item .env.example .env`.
 
-## What is already provided
-
-- `main.py`: the completed Phase 1–3 code, including `student_agent` and its
-  `get_students` tool. Script examples now run only with `python main.py`, so
-  importing the agent does not execute database queries or model calls.
-- `server.py`: a FastAPI app, a complete health endpoint, JSON request and response
-  models, the imported student agent, and the Phase 4 TODO.
-- `requirements.txt`: previous dependencies plus FastAPI and Uvicorn.
-
-The request model accepts a nonblank `question`; the response model contains an
-`answer`. Each request starts a fresh agent run. Model calls use your provider quota
-and may incur charges.
-
-## Start the server
-
-Run from the repository root:
-
-```bash
-python -m uvicorn server:app --reload
-```
-
-`server:app` means the `app` object in `server.py`. Uvicorn serves it at
-`http://127.0.0.1:8000`; `--reload` reloads the server when you save code.
-Stop it with Ctrl+C. Keep this terminal open and use a second terminal for curl.
-
-Try the provided reference endpoint:
+Confirm the backend works before starting the frontend:
 
 ```bash
 curl http://127.0.0.1:8000/health
-```
-
-Expected response:
-
-```json
-{"status":"ok"}
-```
-
-Open `http://127.0.0.1:8000/docs` for interactive API documentation.
-The base has only the health route; the agent route appears after you implement it.
-The environment variables must be filled in before starting either branch because
-importing `main.py` configures the Supabase client and Gemini model.
-
-## Your task
-
-Complete the TODO at the bottom of `server.py`:
-
-1. Register `POST /api/agent/ask`, using `response_model=AgentAnswer`.
-2. Create a handler with a parameter typed as `AgentQuestion`.
-3. Send `request.question` to the existing `student_agent` with `run_sync`.
-4. Return `AgentAnswer` with the result's `output` as its `answer`.
-
-Use a regular `def` handler. FastAPI runs it in a worker thread, where the
-synchronous `run_sync` call can wait for the agent. Do not put `run_sync` inside
-an `async def` handler. The existing agent should retrieve records through its
-`get_students` tool; keep database queries out of the endpoint.
-
-## Test with curl
-
-After completing the TODO, run this in a second terminal:
-
-```bash
 curl -X POST http://127.0.0.1:8000/api/agent/ask \
   -H 'Content-Type: application/json' \
   -d '{"question":"How many records have the name prad?"}'
 ```
 
-Expected response (wording may vary):
+Expected: `{"status":"ok"}` for health and an `answer` for the agent request.
+Exact answer wording may vary. On PowerShell, use `curl.exe` and put the POST
+command on one line.
+
+## Start the frontend
+
+Use Node.js 22 or newer. Keep the backend running and open a second terminal:
+
+```bash
+cd frontend
+npm ci
+npm run dev
+```
+
+Open `http://localhost:3000`. Open Developer Tools → **Console**, then click
+**Ask agent**. In the base, you should see the provided click message.
+The answer is intended for the browser console, not the terminal running Next.js.
+
+Use port 3000 so the frontend matches the backend's allowed origins. If Next.js
+picks another port because 3000 is occupied, stop that process or update
+`allow_origins` in `server.py`. Both `localhost:3000` and `127.0.0.1:3000` are allowed.
+
+## Your task
+
+Complete the TODO in `frontend/app/page.js`, inside `askAgent`:
+
+1. Use `fetch(API_URL, ...)` to send a **POST** request.
+2. Set `Content-Type` to `application/json`.
+3. Set the body to `JSON.stringify({ question: QUESTION })`.
+4. Check `response.ok` and throw an `Error` for a failed HTTP response.
+5. Await `response.json()` and print the returned object with `console.log`.
+
+Replace the reference click log with your implementation. Keep the provided
+loading/error handling. `"use client"` enables the button's browser event handler
+and React state. The request should happen only when the button is clicked.
+
+The page calls the Python API directly; no Next.js API route or database client
+is needed. Keep Gemini and Supabase keys in the backend `.env`, never in frontend
+code. The hard-coded local API URL and question are provided for this exercise.
+
+## Verify the solution
+
+Click **Ask agent** with the browser console open. Expected console object:
 
 ```json
 {"answer":"There are 3 records with the name prad."}
 ```
 
-The server terminal should print `Tool called: get_students`. Confirm both that
-the tool ran and that the answer matches the database. The count assumes the
-workshop records are unchanged. The HTTP response contains the answer, not the
-script's earlier example output.
+The answer comes from the API; do not hard-code it. The count assumes the workshop
+records are unchanged. In Developer Tools → **Network**, verify a POST to
+`http://127.0.0.1:8000/api/agent/ask` with the JSON question and HTTP 200. A CORS
+preflight OPTIONS request may also appear. The backend terminal should print
+`Tool called: get_students`.
 
-Try sending `{"question":""}` or `{}` instead. FastAPI should return HTTP 422
-for an invalid request without running the agent. Before the TODO is complete,
-the agent URL returns HTTP 404.
+While the request runs, the button shows `Asking…` and is disabled. If it fails,
+the page displays an error and logs it in the console. If you see `Failed to fetch`,
+check that the backend is running and the frontend origin matches CORS setup.
+For HTTP 500, inspect the backend traceback and provider/database settings.
+Each click starts a fresh agent run and uses your provider quota.
 
-On Windows PowerShell, use `curl.exe` for the curl commands; put the POST command
-on one line instead of using Bash's backslash continuation.
+To check the frontend production build:
 
-## Test with Postman
-
-1. Create a **POST** request to `http://127.0.0.1:8000/api/agent/ask`.
-2. Select **Body → raw → JSON**; confirm `Content-Type: application/json`.
-3. Enter `{"question":"How many records have the name prad?"}`.
-4. Click **Send** and check for HTTP 200 and an `answer` in the JSON response.
-
-If the server cannot start, check your active environment and `.env` settings.
-If `/health` works but the agent request fails, check the server traceback,
-provider key/model, and Supabase read access. A GET request to the completed agent
-route returns HTTP 405; use POST with a JSON body.
+```bash
+cd frontend
+npm run build
+```
 
 ## Branches
 
 ```text
-phase-3-solution
-└── phase-4-base
-    └── phase-4-solution
+phase-4-solution
+└── phase-5-base
+    └── phase-5-solution
 ```
 
-- `phase-4-base`: completed earlier phases, server setup, a health reference, and the TODO.
-- `phase-4-solution`: the same files with the agent endpoint implemented.
+- `phase-5-base`: completed earlier phases, local CORS setup, a Next.js button
+  reference, and the fetch/console TODO.
+- `phase-5-solution`: the same files with the button's API request implemented.
 
 ## References
 
-- [FastAPI request bodies](https://fastapi.tiangolo.com/tutorial/body/)
-- [FastAPI synchronous and asynchronous handlers](https://fastapi.tiangolo.com/async/)
-- [Pydantic AI agent runs](https://ai.pydantic.dev/agents/)
+- [Next.js installation and App Router](https://nextjs.org/docs/app/getting-started/installation)
+- [Next.js client components](https://nextjs.org/docs/app/api-reference/directives/use-client)
+- [FastAPI CORS setup](https://fastapi.tiangolo.com/tutorial/cors/)

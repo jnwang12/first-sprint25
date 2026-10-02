@@ -1,11 +1,20 @@
 """Phase 4: serve the Phase 3 student agent over HTTP."""
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, ConfigDict, Field
 
 from main import student_agent
 
 app = FastAPI(title="Workshop Student Agent")
+
+# Phase 5 setup: allow the local Next.js app to call this API from the browser.
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],
+    allow_methods=["GET", "POST"],
+    allow_headers=["Content-Type"],
+)
 
 
 class AgentQuestion(BaseModel):
