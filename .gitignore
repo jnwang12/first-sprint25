@@ -1,29 +1,5 @@
-# Python
+.env
+.venv/
 __pycache__/
 *.py[cod]
-.venv/
-.pytest_cache/
-.ruff_cache/
-.coverage
-htmlcov/
-*.egg-info/
-# Local database
-*.sqlite3
-*.sqlite3-*
-# JavaScript / Next.js
-node_modules/
-.next/
-out/
-coverage/
-*.tsbuildinfo
-next-env.d.ts
-# Secrets (keep safe templates)
-.env
-.env.*
-!.env.example
-# OS / editor / build
 .DS_Store
-.idea/
-*.log
-dist/
-build/
